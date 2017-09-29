@@ -1,0 +1,8 @@
+32 bytes for each node num
+	16 for file num
+	16 for line num
+	
+128 bytes for each node block
+	32 for prev node num
+	32 for next node num
+	64 for data information

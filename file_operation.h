@@ -213,3 +213,30 @@ int file_lines_num(int file_num){
     fclose(fp);
     return sz/file_block_size;
 }
+
+/*
+从数据块中的一部分转换为数字(不超过4字节)
+*/
+unsigned trans_block_to_int(char block[],int start,int len){
+    unsigned ret = 0;
+    for (int i = start;i<start+len;i++)
+        ret = (ret<<8)+block[i];
+    return ret;
+}
+
+/*
+将数据块中的一部分信息提取为字符串
+*/
+void trans_block_to_char_array(char block[],int start,int len,char ret[]){
+    strncpy(ret,block+start,len);
+}
+
+/*
+将数字植入数据块中（必须是4字节）
+*/
+void put_int_to_block(char block[],int start,unsigned num){
+    for (int i = start+3;i>=start;i--){
+        block[i] = num & 255;
+        num = num>>8;
+    }
+}

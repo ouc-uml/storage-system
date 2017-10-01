@@ -3,3 +3,10 @@
 	4 for line num
 	
 128 bytes for each node block
+
+in pointer.dat
+	8 bytes for the tail pointer position
+	4 bytes for the trash size
+
+in trash.dat
+	8 bytes for each trash_node number

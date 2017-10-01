@@ -6,9 +6,10 @@
 #include <fcntl.h>
 
 char message_queue[32];
-int node_block_size;
-int file_block_size;
+unsigned node_block_size;
+unsigned file_block_size;
 char folder_name[64];
+unsigned max_node_block_number;
 
 /*
 加载文件系统的配置信息，在所有的操作进行之前进行
@@ -21,13 +22,16 @@ void load_configuration(){
     fscanf(fp,"%s",message_queue);
 
     fscanf(fp,"%s",tmp);
-    fscanf(fp,"%d",&node_block_size);
+    fscanf(fp,"%u",&node_block_size);
 
     fscanf(fp,"%s",tmp);
-    fscanf(fp,"%d",&file_block_size);
+    fscanf(fp,"%u",&file_block_size);
 
     fscanf(fp,"%s",tmp);
     fscanf(fp,"%s",folder_name);
+
+    fscanf(fp,"%s",tmp);
+    fscanf(fp,"%u",&max_node_block_number);
     chdir(folder_name);
 
     fclose(fp);
@@ -37,7 +41,7 @@ void load_configuration(){
 将节点数据块写入指定的文件：行号位置
 */
 
-void write_node_block(char data[],int file_num,int line_num){
+void write_node_block(unsigned char data[],int file_num,int line_num){
     char filename[32];
     memset(filename,0,sizeof filename);
     int index = 0;
@@ -80,7 +84,7 @@ void write_node_block(char data[],int file_num,int line_num){
 读取指定的文件：行号位置的节点数据块
 */
 
-void read_node_block(int file_num,int line_num,char result[]){
+void read_node_block(int file_num,int line_num,unsigned char result[]){
     int filenum = file_num;
     char filename[32];
     memset(filename,0,sizeof filename);
@@ -166,7 +170,7 @@ int node_lines_num(int file_num){
 /*
 将指定记录数据块写入文件：行号指定位置
 */
-void write_file_block(char data[],int file_num,int line_num){
+void write_file_block(unsigned char data[],int file_num,int line_num){
     char filename[32];
     memset(filename,0,sizeof filename);
     int index = 0;
@@ -208,7 +212,7 @@ void write_file_block(char data[],int file_num,int line_num){
 /*
 读取文件：行号指定的位置的记录数据块
 */
-void read_file_block(int file_num,int line_num,char result[]){
+void read_file_block(int file_num,int line_num,unsigned char result[]){
     int filenum = file_num;
     char filename[32];
     memset(filename,0,sizeof filename);
@@ -293,7 +297,7 @@ int file_lines_num(int file_num){
 /*
 从数据块中的一部分转换为数字(不超过4字节)
 */
-unsigned trans_block_to_int(char block[],int start,int len){
+unsigned trans_block_to_int(unsigned char block[],int start,int len){
     unsigned ret = 0;
     for (int i = start;i<start+len;i++)
         ret = (ret<<8)+block[i];
@@ -303,14 +307,14 @@ unsigned trans_block_to_int(char block[],int start,int len){
 /*
 将数据块中的一部分信息提取为字符串
 */
-void trans_block_to_char_array(char block[],int start,int len,char ret[]){
+void trans_block_to_char_array(unsigned char block[],int start,int len,unsigned char ret[]){
     strncpy(ret,block+start,len);
 }
 
 /*
 将数字植入数据块中（必须是4字节）
 */
-void put_int_to_block(char block[],int start,unsigned num){
+void put_int_to_block(unsigned char block[],int start,unsigned num){
     for (int i = start+3;i>=start;i--){
         block[i] = num & 255;
         num = num>>8;
@@ -320,6 +324,6 @@ void put_int_to_block(char block[],int start,unsigned num){
 /*
 将字符串植入数据块中
 */
-void put_char_to_block(char block[],int block_start,int data_start,int len, char data[]){
+void put_char_to_block(unsigned char block[],int block_start,int data_start,int len,unsigned char data[]){
     strncpy(block+block_start,data+data_start,len);
 }

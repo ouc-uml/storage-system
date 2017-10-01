@@ -3,6 +3,7 @@
 #include <math.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 char message_queue[32];
 int node_block_size;
@@ -52,11 +53,27 @@ void write_node_block(char data[],int file_num,int line_num){
         filename[index-i-1] = tmp;
     }
 
-    FILE *fp = fopen(filename, "r+");
-    if (fp == NULL) fp = fopen(filename,"w+");
-    fseek(fp,line_num*node_block_size,SEEK_SET);
-    fwrite(data,sizeof(char), node_block_size,fp);
-    fclose(fp);
+    int fd = open(filename,O_RDWR ,S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |S_IROTH);
+    if (fd <0) fd = open(filename,O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |S_IROTH);
+    if (fd <0) {
+        printf("write_node_block error, cannot create block\n");
+        return ;
+    }
+
+    struct flock lock;
+    lock.l_type = F_WRLCK;
+    lock.l_whence = SEEK_SET;
+    lock.l_start = line_num*node_block_size;
+    lock.l_len = node_block_size;
+
+    fcntl(fd,F_SETLKW,&lock);
+
+    lseek(fd,line_num*node_block_size,SEEK_SET);
+    write(fd,data,node_block_size);
+
+    lock.l_type = F_UNLCK;
+    fcntl(fd,F_SETLKW,&lock);
+    close(fd);
 }
 
 /*
@@ -80,14 +97,26 @@ void read_node_block(int file_num,int line_num,char result[]){
         filename[index-i-1] = tmp;
     }
 
-    FILE *fp = fopen(filename, "rb");
-    if (fp == NULL) {
-        printf("read_node_block error, %d.ndb not exists\n",filenum);
-        return;
+    int fd = open(filename,O_RDWR ,S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |S_IROTH);
+    if (fd <0) {
+        printf("read_node_block error, file not exists\n");
+        return ;
     }
-    fseek(fp,line_num*node_block_size,SEEK_SET);
-    fread(result,sizeof(char), node_block_size,fp);
-    fclose(fp);
+
+    struct flock lock;
+    lock.l_type = F_RDLCK;
+    lock.l_whence = SEEK_SET;
+    lock.l_start = line_num*node_block_size;
+    lock.l_len = node_block_size;
+
+    fcntl(fd,F_SETLKW,&lock);
+
+    lseek(fd,line_num*node_block_size,SEEK_SET);
+    read(fd,result,node_block_size);
+
+    lock.l_type = F_UNLCK;
+    fcntl(fd,F_SETLKW,&lock);
+    close(fd);
 }
 
 /*
@@ -112,14 +141,25 @@ int node_lines_num(int file_num){
         filename[index-i-1] = tmp;
     }
 
-    FILE *fp = fopen(filename,"r");
-    if (fp == NULL) {
-        printf("node_lines_num error, %d.ndb not exists\n",filenum);
+    int fd = open(filename,O_RDWR ,S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |S_IROTH);
+    if (fd <0) {
+        printf("read_node_block error, file not exists\n");
         return -1;
     }
-    fseek(fp, 0L, SEEK_END);
-    int sz = ftell(fp);
-    fclose(fp);
+
+    struct flock lock;
+    lock.l_type = F_RDLCK;
+    lock.l_whence = SEEK_SET;
+    lock.l_start = 0;
+    lock.l_len = 0;
+
+    fcntl(fd,F_SETLKW,&lock);
+
+    int sz = lseek(fd,0,SEEK_END);
+
+    lock.l_type = F_UNLCK;
+    fcntl(fd,F_SETLKW,&lock);
+    close(fd);
     return sz/node_block_size;
 }
 
@@ -142,14 +182,27 @@ void write_file_block(char data[],int file_num,int line_num){
         filename[index-i-1] = tmp;
     }
 
-    FILE *fp = fopen(filename, "r+");
-    if (fp == NULL) {
-        fp = fopen(filename,"w+");
+    int fd = open(filename,O_RDWR ,S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |S_IROTH);
+    if (fd <0) fd = open(filename,O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |S_IROTH);
+    if (fd <0) {
+        printf("write_file_block error, cannot create block\n");
+        return ;
     }
 
-    fseek(fp,line_num*file_block_size,SEEK_SET);
-    fwrite(data,sizeof(char), file_block_size,fp);
-    fclose(fp);
+    struct flock lock;
+    lock.l_type = F_WRLCK;
+    lock.l_whence = SEEK_SET;
+    lock.l_start = line_num*file_block_size;
+    lock.l_len = file_block_size;
+
+    fcntl(fd,F_SETLKW,&lock);
+
+    lseek(fd,line_num*file_block_size,SEEK_SET);
+    write(fd,data,file_block_size);
+
+    lock.l_type = F_UNLCK;
+    fcntl(fd,F_SETLKW,&lock);
+    close(fd);
 }
 
 /*
@@ -172,14 +225,26 @@ void read_file_block(int file_num,int line_num,char result[]){
         filename[index-i-1] = tmp;
     }
 
-    FILE *fp = fopen(filename, "rb");
-    if (fp == NULL) {
-        printf("read_file_block error, %d not exists\n",filenum);
-        return;
+    int fd = open(filename,O_RDWR ,S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |S_IROTH);
+    if (fd <0) {
+        printf("read_file_block error, file not exists\n");
+        return ;
     }
-    fseek(fp,line_num*file_block_size,SEEK_SET);
-    fread(result,sizeof(char), file_block_size,fp);
-    fclose(fp);
+
+    struct flock lock;
+    lock.l_type = F_RDLCK;
+    lock.l_whence = SEEK_SET;
+    lock.l_start = line_num*file_block_size;
+    lock.l_len = file_block_size;
+
+    fcntl(fd,F_SETLKW,&lock);
+
+    lseek(fd,line_num*file_block_size,SEEK_SET);
+    read(fd,result,file_block_size);
+
+    lock.l_type = F_UNLCK;
+    fcntl(fd,F_SETLKW,&lock);
+    close(fd);
 }
 
 /*
@@ -203,14 +268,25 @@ int file_lines_num(int file_num){
         filename[index-i-1] = tmp;
     }
 
-    FILE *fp = fopen(filename,"r");
-    if (fp == NULL) {
-        printf("file_lines_num error, %d not exists\n",filenum);
+    int fd = open(filename,O_RDWR ,S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |S_IROTH);
+    if (fd <0) {
+        printf("read_file_block error, file not exists\n");
         return -1;
     }
-    fseek(fp, 0L, SEEK_END);
-    int sz = ftell(fp);
-    fclose(fp);
+
+    struct flock lock;
+    lock.l_type = F_RDLCK;
+    lock.l_whence = SEEK_SET;
+    lock.l_start = 0;
+    lock.l_len = 0;
+
+    fcntl(fd,F_SETLKW,&lock);
+
+    int sz = lseek(fd,0,SEEK_END);
+
+    lock.l_type = F_UNLCK;
+    fcntl(fd,F_SETLKW,&lock);
+    close(fd);
     return sz/file_block_size;
 }
 
@@ -239,4 +315,11 @@ void put_int_to_block(char block[],int start,unsigned num){
         block[i] = num & 255;
         num = num>>8;
     }
+}
+
+/*
+将字符串植入数据块中
+*/
+void put_char_to_block(char block[],int block_start,int data_start,int len, char data[]){
+    strncpy(block+block_start,data+data_start,len);
 }

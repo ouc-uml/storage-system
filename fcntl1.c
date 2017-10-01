@@ -2,9 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include "file_operation.h"
 
 int main (int argc, char* argv[])
 {
+load_configuration();
  char* file = argv[1];
  int fd;
  struct flock lock;
@@ -15,10 +17,10 @@ int main (int argc, char* argv[])
  printf ("locking\n");
  /* Initialize the flock structure. */
  memset (&lock, 0, sizeof(lock));
-   lock.l_type    = F_WRLCK;   /* Test for any lock on any part of file. */
-  lock.l_start   = 50;
-  lock.l_whence  = SEEK_SET;
-  lock.l_len     = 20;
+ lock.l_type = F_WRLCK;
+ lock.l_whence = SEEK_SET;
+ lock.l_start = 0;
+ lock.l_len = node_block_size;
  /* Place a write lock on the file. */
  fcntl (fd, F_SETLKW, &lock);
 

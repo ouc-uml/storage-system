@@ -4,9 +4,13 @@
 using namespace std;
 
 struct TREAP{
+    memory_location self;
     memory_location root;
-    int hash_top;
+    unsigned hash_top;
+    unsigned block_size;
     TREAP(){
+        self.filenum = self.linenum = -1;
+        block_size = node_block_size;
         root.set_null();
         srand(time(NULL));
         hash_top = 0;
@@ -262,4 +266,25 @@ struct TREAP{
         if (!node_x.left.is_null()) show(node_x.left);
         if (!node_x.right.is_null()) show(node_x.right);
 	}
-} a;
+
+	void save(){
+        unsigned char buffer[block_size];
+        put_int_to_block(buffer,0,root.filenum);
+        put_int_to_block(buffer,4,root.linenum);
+        put_int_to_block(buffer,8,hash_top);
+        write_node_block(buffer,self.filenum,self.linenum);
+	}
+	void load(){
+        unsigned char buffer[block_size];
+        read_node_block(self.filenum,self.linenum,buffer);
+        root.filenum = trans_block_to_int(buffer,0,4);
+        root.linenum = trans_block_to_int(buffer,4,4);
+        hash_top = trans_block_to_int(buffer,8,4);
+	}
+	void create(){
+        new_node_position(&self.filenum,&self.linenum);
+	}
+    void release(){
+        delete_node(self.filenum,self.linenum);
+    }
+};

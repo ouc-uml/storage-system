@@ -6,10 +6,10 @@
 #include <fcntl.h>
 
 char message_queue[32];
-unsigned node_block_size;
-unsigned file_block_size;
-char folder_name[64];
-unsigned max_node_block_number;
+unsigned node_block_size = 128;
+unsigned file_block_size = 1024;
+char folder_name[64] = "database";
+unsigned max_node_block_number = 8192;
 
 /*
 加载文件系统的配置信息，在所有的操作进行之前进行
@@ -45,11 +45,13 @@ void write_node_block(unsigned char data[],int file_num,int line_num){
     char filename[32];
     memset(filename,0,sizeof filename);
     int index = 0;
+    if (file_num == 0) filename[index++] = '0';
     while (file_num){
         filename[index++] = file_num%10+'0';
         file_num/=10;
     }
     strcat(filename,".ndb");
+    //printf("%s\n",filename);
     char tmp;
     for (int i = 0;i*2<index; i++){
         tmp = filename[i];
@@ -89,6 +91,7 @@ void read_node_block(int file_num,int line_num,unsigned char result[]){
     char filename[32];
     memset(filename,0,sizeof filename);
     int index = 0;
+    if (file_num == 0) filename[index++] = '0';
     while (file_num){
         filename[index++] = file_num%10+'0';
         file_num/=10;
@@ -133,6 +136,7 @@ int node_lines_num(int file_num){
     char filename[32];
     memset(filename,0,sizeof filename);
     int index = 0;
+    if (file_num == 0) filename[index++] = '0';
     while (file_num){
         filename[index++] = file_num%10+'0';
         file_num/=10;
@@ -174,6 +178,7 @@ void write_file_block(unsigned char data[],int file_num,int line_num){
     char filename[32];
     memset(filename,0,sizeof filename);
     int index = 0;
+    if (file_num == 0) filename[index++] = '0';
     while (file_num){
         filename[index++] = file_num%10+'0';
         file_num/=10;
@@ -217,6 +222,7 @@ void read_file_block(int file_num,int line_num,unsigned char result[]){
     char filename[32];
     memset(filename,0,sizeof filename);
     int index = 0;
+    if (file_num == 0) filename[index++] = '0';
     while (file_num){
         filename[index++] = file_num%10+'0';
         file_num/=10;
@@ -260,6 +266,7 @@ int file_lines_num(int file_num){
     char filename[32];
     memset(filename,0,sizeof filename);
     int index = 0;
+    if (file_num == 0) filename[index++] = '0';
     while (file_num){
         filename[index++] = file_num%10+'0';
         file_num/=10;
@@ -308,7 +315,7 @@ unsigned trans_block_to_int(unsigned char block[],int start,int len){
 将数据块中的一部分信息提取为字符串
 */
 void trans_block_to_char_array(unsigned char block[],int start,int len,unsigned char ret[]){
-    strncpy(ret,block+start,len);
+    memcpy(ret,block+start,len);
 }
 
 /*
@@ -325,5 +332,5 @@ void put_int_to_block(unsigned char block[],int start,unsigned num){
 将字符串植入数据块中
 */
 void put_char_to_block(unsigned char block[],int block_start,int data_start,int len,unsigned char data[]){
-    strncpy(block+block_start,data+data_start,len);
+    memcpy(block+block_start,data+data_start,len);
 }

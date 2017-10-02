@@ -51,7 +51,7 @@ void new_node_position(unsigned *filenum,unsigned *linenum){
 
     fcntl(fdd,F_SETLKW,&lock);
 
-    char buffer[20];
+    unsigned char buffer[20];
     read(fdd,buffer,12);
     *filenum = trans_block_to_int(buffer,0,4);
     *linenum = trans_block_to_int(buffer,4,4);
@@ -93,7 +93,7 @@ void new_node_position(unsigned *filenum,unsigned *linenum){
 
     lseek(fd,8*(trash_size-1),SEEK_SET);
 
-    char trash_buffer[12];
+    unsigned char trash_buffer[12];
     read(fd,trash_buffer,8);
 
     *filenum = trans_block_to_int(trash_buffer,0,4);
@@ -184,7 +184,7 @@ void new_record_position(unsigned *filenum,unsigned *linenum){
 
     fcntl(fdd,F_SETLKW,&lock);
 
-    char buffer[20];
+    unsigned char buffer[20];
     read(fdd,buffer,12);
     *filenum = trans_block_to_int(buffer,0,4);
     *linenum = trans_block_to_int(buffer,4,4);
@@ -226,7 +226,7 @@ void new_record_position(unsigned *filenum,unsigned *linenum){
 
     lseek(fd,8*(trash_size-1),SEEK_SET);
 
-    char trash_buffer[12];
+    unsigned char trash_buffer[12];
     read(fd,trash_buffer,8);
 
     *filenum = trans_block_to_int(trash_buffer,0,4);

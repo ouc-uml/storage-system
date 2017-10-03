@@ -310,7 +310,16 @@ struct TREAP{
 	void create(){
         new_node_position(&self.filenum,&self.linenum);
 	}
+    void release_node(memory_location x){
+        binary_tree_node node_x;
+        node_x.self = x;
+        node_x.load();
+        if (!node_x.left.is_null()) release_node(node_x.left);
+        if (!node_x.right.is_null()) release_node(node_x.right);
+        delete_node(x.filenum,x.linenum);
+    }
     void release(){
+        release_node(root);
         delete_node(self.filenum,self.linenum);
     }
 };

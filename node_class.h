@@ -5,7 +5,7 @@ struct memory_location{
     bool is_null(){
         return filenum==-1 && linenum==-1;
     }
-    bool set_null(){
+    void set_null(){
         filenum = linenum = -1;
     }
     memory_location& operator = (memory_location& x){
@@ -15,6 +15,11 @@ struct memory_location{
     }
     bool operator == (memory_location & x){
         return x.filenum == this->filenum && x.linenum == this->linenum;
+    }
+    memory_location& operator = (unsigned char x[]){
+        filenum = trans_block_to_int(x,0,4);
+        linenum = trans_block_to_int(x,4,4);
+        return *this;
     }
 };
 
@@ -70,6 +75,44 @@ struct data_type {
         if (v_type == 0) memcpy(this->value,x.value,4);
         else memcpy(this->value,x.value,32);
     }
+    data_type& operator = (unsigned char x[]){
+        if (k_type == 0) memcpy(this->key,x,4);
+        else memcpy(this->key,x,32);
+    }
+};
+
+struct queue_node : public node_class{
+    memory_location prev,succ;
+    data_type data;
+    queue_node(){
+        prev.set_null();
+        succ.set_null();
+    }
+
+    void save(){
+        if (self.is_null()) return ;
+        unsigned char buffer[block_size];
+        put_int_to_block(buffer,0,prev.filenum);
+        put_int_to_block(buffer,4,prev.linenum);
+        put_int_to_block(buffer,8,succ.filenum);
+        put_int_to_block(buffer,12,succ.linenum);
+        put_char_to_block(buffer,16,0,32,data.key);
+        unsigned tmpmode = 0;
+        if (data.k_type) tmpmode = 128;
+        put_int_to_block(buffer,48,tmpmode);
+        write_node_block(buffer,self.filenum,self.linenum);
+    }
+
+    void load(){
+        if (self.is_null()) return ;
+        unsigned char buffer[block_size];
+        read_node_block(self.filenum,self.linenum,buffer);
+
+        prev = buffer;
+        succ = buffer+8;
+        trans_block_to_char_array(buffer,16,32,data.key);
+        data.k_type = trans_block_to_int(buffer,48,1) == 128;
+    }
 };
 
 struct binary_tree_node : public node_class{
@@ -104,8 +147,8 @@ struct binary_tree_node : public node_class{
 
     void load(){
         if (self.is_null()){
-            left.filenum = left.linenum = -1;
-            right.filenum = right.linenum = -1;
+            left.set_null();
+            right.set_null();
             size = HASH = RANDOM = 0;
             return ;
         }
@@ -122,8 +165,8 @@ struct binary_tree_node : public node_class{
         RANDOM = trans_block_to_int(buffer,24,4);
         trans_block_to_char_array(buffer,28,32,data.key);
         trans_block_to_char_array(buffer,60,32,data.value);
-        data.k_type = (trans_block_to_int(buffer,92,1) & 128) != 0;
-        data.v_type = (trans_block_to_int(buffer,92,1) & 64) != 0;
+        data.k_type = (trans_block_to_int(buffer,92,4) & 128) != 0;
+        data.v_type = (trans_block_to_int(buffer,92,4) & 64) != 0;
     }
 
     binary_tree_node& operator = (binary_tree_node& x){

@@ -304,8 +304,8 @@ struct TREAP{
         root.linenum = trans_block_to_int(buffer,4,4);
         hash_top = trans_block_to_int(buffer,8,4);
         trans_block_to_char_array(buffer,12,32,name);
-        k_type = (trans_block_to_int(buffer,44,1) & 128) != 0;
-        v_type = (trans_block_to_int(buffer,44,1) & 64) != 0;
+        k_type = (trans_block_to_int(buffer,44,4) & 128) != 0;
+        v_type = (trans_block_to_int(buffer,44,4) & 64) != 0;
 	}
 	void create(){
         new_node_position(&self.filenum,&self.linenum);

@@ -6,9 +6,16 @@ using namespace std;
 struct TREAP{
     memory_location self;
     memory_location root;
+    bool k_type,v_type;
     unsigned hash_top;
+    unsigned char name[32];
     unsigned block_size;
-    TREAP(){
+    TREAP(const char xname[]){
+        memset(name,0,sizeof name);
+        for (int i = 0;i<32;i++){
+            if (!xname[i]) break;
+            else name[i] = xname[i];
+        }
         self.filenum = self.linenum = -1;
         block_size = node_block_size;
         root.set_null();
@@ -89,6 +96,8 @@ struct TREAP{
 		if (x.is_null()){
 			binary_tree_node node_x;
 			node_x.create();
+            node_x.data.k_type = k_type;
+			node_x.data.v_type = v_type;
 
 			if (root.is_null()) root=node_x.self;
 			node_x.size=1;
@@ -262,7 +271,16 @@ struct TREAP{
         binary_tree_node node_x;
         node_x.self = x;
         node_x.load();
-        printf("%d %d\n",node_x.data.key,node_x.data.value);
+        if (k_type) printf("%s ",node_x.data.key);
+        else {
+            unsigned tmp = trans_block_to_int(node_x.data.key,0,4);
+            printf("%d ",tmp);
+        }
+        if (v_type) printf("%s \n",node_x.data.value);
+        else {
+            unsigned tmp = trans_block_to_int(node_x.data.value,0,4);
+            printf("%d\n",tmp);
+        }
         if (!node_x.left.is_null()) show(node_x.left);
         if (!node_x.right.is_null()) show(node_x.right);
 	}
@@ -272,6 +290,11 @@ struct TREAP{
         put_int_to_block(buffer,0,root.filenum);
         put_int_to_block(buffer,4,root.linenum);
         put_int_to_block(buffer,8,hash_top);
+        put_char_to_block(buffer,12,0,32,name);
+        unsigned tmpmode = 0;
+        if (k_type) tmpmode |= 128;
+        if (v_type) tmpmode |= 64;
+        put_int_to_block(buffer,44,tmpmode);
         write_node_block(buffer,self.filenum,self.linenum);
 	}
 	void load(){
@@ -280,6 +303,9 @@ struct TREAP{
         root.filenum = trans_block_to_int(buffer,0,4);
         root.linenum = trans_block_to_int(buffer,4,4);
         hash_top = trans_block_to_int(buffer,8,4);
+        trans_block_to_char_array(buffer,12,32,name);
+        k_type = (trans_block_to_int(buffer,44,1) & 128) != 0;
+        v_type = (trans_block_to_int(buffer,44,1) & 64) != 0;
 	}
 	void create(){
         new_node_position(&self.filenum,&self.linenum);

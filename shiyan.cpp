@@ -1,28 +1,34 @@
-#include "treap.h"
+#include "db_map.h"
+#include "useful_tools.h"
 
 int main(){
-
 	load_configuration();
-    clear_all_nodes();
 
-	TREAP a("shiyan");
-	a.create();
-	a.k_type = 0;
-	a.v_type = 0;
-	unsigned char buffer[32];
-	memcpy(buffer,"shiyan_",7);
+    db_map a("shiyan",'s','d');
+    a.create();
 
-	for (int i = 0;i<100000;i++){
-        data_type tmp;
-        put_int_to_block(tmp.key,0,i);
-        put_int_to_block(tmp.value,0,i);
+    unsigned char key[32];
+    unsigned value;
 
-        a.Insert(tmp);
-	}
+    for (unsigned i = 0;i<100;i++){
+        memset(key,0,32);
+        uprint(key,"su","shiyan_",i);
+        a.add(key,i);
+    }
 
-	a.save();
-	a.load();
-	a.show(a.root);
+    for (unsigned i = 0;i<20;i++){
+        memset(key,0,32);
+        uprint(key,"su","shiyan_",i);
+        a.drop(key);
+    }
+
+    for (unsigned i = 0;i<100;i++){
+        memset(key,0,32);
+        uprint(key,"su","shiyan_",i);
+        printf("%d %d\n",i,a.exists(key));
+    }
+
+    a.release();
 
     return 0;
 }

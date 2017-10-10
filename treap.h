@@ -10,6 +10,7 @@ struct TREAP{
     unsigned hash_top;
     unsigned char name[32];
     unsigned block_size;
+    TREAP(){}
     TREAP(const char xname[]){
         memset(name,0,sizeof name);
         for (int i = 0;i<32;i++){
@@ -116,6 +117,7 @@ struct TREAP{
 
 			node_x.size++;
 			node_x.save();
+			data.k_type = k_type;
 			if (data<node_x.data||(data==node_x.data)&&(node_x.HASH>(hash_top+1))) {
                 memory_location tmp = insert(x,node_x.left,data);
                 if (node_x.left.is_null()) {
@@ -155,6 +157,7 @@ struct TREAP{
 		node_fa.self = fa;
 		node_fa.load();
 
+		data.k_type = k_type;
 		if (node_x.data<data){
 			memory_location kk=remove(x,node_x.right,data);
 			if (!kk.is_null()) {node_x.load();node_x.size--;node_x.save();}
@@ -241,6 +244,7 @@ struct TREAP{
 	}
 
     memory_location Find(data_type data){
+        data.k_type = k_type;
 		if (root.is_null()) {
             memory_location null;
             null.set_null();
@@ -268,15 +272,28 @@ struct TREAP{
 	}
 
 	void show(memory_location x){
-        binary_tree_node node_x;
+        binary_tree_node node_x,left_node,right_node;
         node_x.self = x;
         node_x.load();
-        if (k_type) printf("%s ",node_x.data.key);
+        left_node.self = node_x.left;
+        if (left_node.self.is_null()) left_node.data.key[0] = 0;
+        else left_node.load();
+
+        right_node.self = node_x.right;
+        if (right_node.self.is_null()) right_node.data.key[0] = 0;
+        else  right_node.load();
+        if (k_type) printf("%s %s %s ",node_x.data.key,left_node.data.key,right_node.data.key);
         else {
             unsigned tmp = trans_block_to_int(node_x.data.key,0,4);
+            unsigned tmp1 = trans_block_to_int(left_node.data.key,0,4);
+            unsigned tmp2 = trans_block_to_int(right_node.data.key,0,4);
             printf("%d ",tmp);
+            if (!left_node.self.is_null()) printf("%d ",tmp1);
+            else printf("x ");
+            if (!right_node.self.is_null()) printf("%d ",tmp2);
+            else printf("x ");
         }
-        if (v_type) printf("%s \n",node_x.data.value);
+        if (v_type) printf("%s\n",node_x.data.value);
         else {
             unsigned tmp = trans_block_to_int(node_x.data.value,0,4);
             printf("%d\n",tmp);

@@ -8,7 +8,14 @@ struct memory_location{
     void set_null(){
         filenum = linenum = -1;
     }
+/*
     memory_location& operator = (memory_location& x){
+        this->filenum = x.filenum;
+        this->linenum = x.linenum;
+        return *this;
+    }
+*/
+    memory_location& operator = (memory_location x){
         this->filenum = x.filenum;
         this->linenum = x.linenum;
         return *this;

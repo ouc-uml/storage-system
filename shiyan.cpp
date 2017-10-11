@@ -6,27 +6,17 @@ int main(){
 
     db_map a("shiyan",'s','d');
     a.create();
+    printf("%d %d\n",a.self.filenum,a.self.linenum);
 
     unsigned char key[32];
-    unsigned value;
-
-    for (unsigned i = 0;i<100;i++){
-        memset(key,0,32);
-        uprint(key,"su","shiyan_",i);
+    for (int i = 0;i<100;i++){
+        uprint(key,32,"sus","my name is ",i,".");
         a.add(key,i);
     }
-
-    for (unsigned i = 0;i<20;i++){
-        memset(key,0,32);
-        uprint(key,"su","shiyan_",i);
-        a.drop(key);
-    }
-
-    for (unsigned i = 0;i<100;i++){
-        memset(key,0,32);
-        uprint(key,"su","shiyan_",i);
-        printf("%d %d\n",i,a.exists(key));
-    }
+    unsigned char x[200][32];
+    unsigned num = a.get_all_key(x);
+    for (int i = 0;i<num;i++)
+        printf("%s\n",x[i]);
 
     a.release();
 

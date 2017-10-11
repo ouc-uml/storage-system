@@ -1,7 +1,7 @@
 #include <stdarg.h>
 #include <stdio.h>
-
-void uprint(unsigned char ret[],const char control[], ...){
+void uprint(unsigned char ret[],int maxlen, const char control[], ...){
+    memset(ret,0,maxlen);
     va_list ap;
     va_start(ap,control);
 

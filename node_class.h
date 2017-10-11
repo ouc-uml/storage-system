@@ -81,10 +81,12 @@ struct data_type {
         else memcpy(this->key,x.key,32);
         if (v_type == 0) memcpy(this->value,x.value,4);
         else memcpy(this->value,x.value,32);
+        return *this;
     }
     data_type& operator = (unsigned char x[]){
         if (k_type == 0) memcpy(this->key,x,4);
         else memcpy(this->key,x,32);
+        return *this;
     }
 };
 

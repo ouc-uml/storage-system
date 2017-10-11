@@ -190,4 +190,31 @@ struct db_map : public TREAP{
 
         return !ret.is_null();
     }
+
+    unsigned get_key(memory_location root,unsigned x[],unsigned num){
+        if (root.is_null()) return 0;
+        binary_tree_node node;
+        node.self = root;
+        node.load();
+        x[num++]=trans_block_to_int(node.data.key,0,4);
+        num+=get_key(node.left,x,num);
+        num+=get_key(node.right,x,num);
+        return node.size;
+    }
+    unsigned get_key(memory_location root,unsigned char x[][32],unsigned num){
+        if (root.is_null()) return 0;
+        binary_tree_node node;
+        node.self = root;
+        node.load();
+        memcpy(x[num++],node.data.key,32);
+        num+=get_key(node.left,x,num);
+        num+=get_key(node.right,x,num);
+        return node.size;
+    }
+    unsigned get_all_key(unsigned x[]){
+        return get_key(root,x,0);
+    }
+    unsigned get_all_key(unsigned char x[][32]){
+        return get_key(root,x,0);
+    }
 };

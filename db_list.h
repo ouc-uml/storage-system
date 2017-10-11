@@ -1,26 +1,47 @@
 #include "node_class.h"
 
-struct QUEUE{
+struct db_list{
     memory_location self;
     memory_location head,tail;
     bool k_type;
     unsigned size,block_size;
     unsigned char name[32];
 
-    QUEUE(const char x[]){
+    db_list(const char x[],char k_ty){
         memcpy(name,x,32);
         head.set_null();
         tail.set_null();
         block_size = node_block_size;
         size = 0;
-        k_type = 0;
+        if (k_ty == 'd') k_type = 0;
+        else k_type = 1;
     }
+    db_list(){}
     void push_tail(unsigned char x[]){
         size++;
         queue_node node_x;
         node_x.create();
-        if (k_type == 0) memcpy(node_x.data.key,x,4);
-        else memcpy(node_x.data.key,x,32);
+        memcpy(node_x.data.key,x,32);
+
+        if (head.is_null() && tail.is_null()){
+            tail = head = node_x.self;
+        }
+        else {
+            queue_node node_tail;
+            node_tail.self = tail;
+            node_tail.load();
+            node_tail.succ = node_x.self;
+            node_tail.save();
+            node_x.prev = tail;
+            tail = node_x.self;
+        }
+        node_x.save();
+    }
+    void push_tail(unsigned x){
+        size++;
+        queue_node node_x;
+        node_x.create();
+        put_int_to_block(node_x.data.key,0,x);
 
         if (head.is_null() && tail.is_null()){
             tail = head = node_x.self;
@@ -40,8 +61,27 @@ struct QUEUE{
         size++;
         queue_node node_x;
         node_x.create();
-        if (k_type == 0) memcpy(node_x.data.key,x,4);
-        else memcpy(node_x.data.key,x,32);
+        memcpy(node_x.data.key,x,32);
+
+        if (head.is_null() && tail.is_null()){
+            tail = head = node_x.self;
+        }
+        else {
+            queue_node node_head;
+            node_head.self = head;
+            node_head.load();
+            node_head.prev = node_x.self;
+            node_head.save();
+            node_x.succ = head;
+            head = node_x.self;
+        }
+        node_x.save();
+    }
+    void push_head(unsigned x){
+        size++;
+        queue_node node_x;
+        node_x.create();
+        put_int_to_block(node_x.data.key,0,x);
 
         if (head.is_null() && tail.is_null()){
             tail = head = node_x.self;
@@ -91,6 +131,30 @@ struct QUEUE{
         else tail.set_null();
         delete_node(tmp.filenum,tmp.linenum);
     }
+    unsigned get_all_value(unsigned char x[][32]){
+        memory_location index = head;
+        unsigned num = 0;
+        while (!index.is_null()){
+            queue_node node;
+            node.self = index;
+            node.load();
+            memcpy(x[num++],node.data.key,32);
+            index = node.succ;
+        }
+        return num;
+    }
+    unsigned get_all_value(unsigned x[]){
+        memory_location index = head;
+        unsigned num = 0;
+        while (!index.is_null()){
+            queue_node node;
+            node.self = index;
+            node.load();
+            x[num++] = trans_block_to_int(node.data.key,0,4);
+            index = node.succ;
+        }
+        return num;
+    }
     void show(){
         memory_location index = head;
         while (!index.is_null()){
@@ -103,8 +167,6 @@ struct QUEUE{
                 printf("%u\n",tmp);
             }
             index = node.succ;
-            node.self = index;
-            node.load();
         }
     }
     void create(){

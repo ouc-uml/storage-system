@@ -17,6 +17,7 @@ struct db_map : public TREAP{
         srand(time(NULL));
         hash_top = 0;
     }
+    db_map(){}
 
     void add(unsigned char _key[],unsigned char _value[]){
         data_type tmp;

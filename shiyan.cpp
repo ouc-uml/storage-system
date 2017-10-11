@@ -1,24 +1,23 @@
-#include "db_map.h"
+#include "db_list.h"
 #include "useful_tools.h"
 
 int main(){
 	load_configuration();
+    clear_all_nodes();
 
-    db_map a("shiyan",'s','d');
+    db_list a("shiyan",'d');
     a.create();
     printf("%d %d\n",a.self.filenum,a.self.linenum);
 
-    unsigned char key[32];
     for (int i = 0;i<100;i++){
-        uprint(key,32,"sus","my name is ",i,".");
-        a.add(key,i);
+        a.push_head(i);
     }
-    unsigned char x[200][32];
-    unsigned num = a.get_all_key(x);
-    for (int i = 0;i<num;i++)
-        printf("%s\n",x[i]);
-
-    a.release();
+    
+    unsigned ret[110];
+    int len = a.get_all_value(ret);
+    for (int i = 0;i<len;i++){
+        printf("%u\n",ret[i]);
+    }
 
     return 0;
 }

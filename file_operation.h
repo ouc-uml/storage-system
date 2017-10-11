@@ -4,6 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
+#define _FILE_OPERATION_H_ 0
 
 char message_queue[32];
 unsigned node_block_size = 128;

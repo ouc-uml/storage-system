@@ -1,4 +1,7 @@
+#ifndef _TREAP_H_
 #include "treap.h"
+#endif
+#define _DB_MAP_H_ 0
 
 struct db_map : public TREAP{
     db_map(const char _name[],char k_ty,char v_ty){
@@ -17,9 +20,33 @@ struct db_map : public TREAP{
         srand(time(NULL));
         hash_top = 0;
     }
-    db_map(){}
+    db_map(){
+        self.filenum = self.linenum = -1;
+        block_size = node_block_size;
+        root.set_null();
+        srand(time(NULL));
+        hash_top = 0;
+    }
+
+    bool exists(unsigned char key[]){
+        memory_location ret;
+        data_type tmp;
+        put_char_to_block(tmp.key,0,0,32,key);
+        ret = Find(tmp);
+
+        return !ret.is_null();
+    }
+    bool exists(unsigned key){
+        memory_location ret;
+        data_type tmp;
+        put_int_to_block(tmp.key,0,key);
+        ret = Find(tmp);
+
+        return !ret.is_null();
+    }
 
     void add(unsigned char _key[],unsigned char _value[]){
+        if (exists(_key)) return ;
         data_type tmp;
         memcpy(tmp.key,_key,32);
         memcpy(tmp.value,_value,32);
@@ -27,6 +54,7 @@ struct db_map : public TREAP{
         save();
     }
     void add(unsigned _key,unsigned char _value[]){
+        if (exists(_key)) return ;
         data_type tmp;
         put_int_to_block(tmp.key,0,_key);
         put_char_to_block(tmp.value,0,0,32,_value);
@@ -34,6 +62,7 @@ struct db_map : public TREAP{
         save();
     }
     void add(unsigned char _key[],unsigned _value){
+        if (exists(_key)) return ;
         data_type tmp;
         put_char_to_block(tmp.key,0,0,32,_key);
         put_int_to_block(tmp.value,0,_value);
@@ -41,6 +70,7 @@ struct db_map : public TREAP{
         save();
     }
     void add(unsigned _key,unsigned _value){
+        if (exists(_key)) return ;
         data_type tmp;
         put_int_to_block(tmp.key,0,_key);
         put_int_to_block(tmp.value,0,_value);
@@ -49,12 +79,14 @@ struct db_map : public TREAP{
     }
 
     void drop(unsigned char _key[]){
+        if (!exists(_key)) return ;
         data_type tmp;
         put_char_to_block(tmp.key,0,0,32,_key);
         Remove(tmp);
         save();
     }
     void drop(unsigned _key){
+        if (!exists(_key)) return ;
         data_type tmp;
         put_int_to_block(tmp.key,0,_key);
         Remove(tmp);
@@ -173,23 +205,6 @@ struct db_map : public TREAP{
         ret_node.save();
         save();
         return 0;
-    }
-
-    bool exists(unsigned char key[]){
-        memory_location ret;
-        data_type tmp;
-        put_char_to_block(tmp.key,0,0,32,key);
-        ret = Find(tmp);
-
-        return !ret.is_null();
-    }
-    bool exists(unsigned key){
-        memory_location ret;
-        data_type tmp;
-        put_int_to_block(tmp.key,0,key);
-        ret = Find(tmp);
-
-        return !ret.is_null();
     }
 
     unsigned get_key(memory_location root,unsigned x[],unsigned num){

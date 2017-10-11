@@ -1,6 +1,10 @@
+#ifndef _NODE_CLASS_H_
 #include "node_class.h"
+#endif
+
 #include <iostream>
 #include <time.h>
+#define _TREAP_H_ 0
 using namespace std;
 
 struct TREAP{
@@ -334,6 +338,11 @@ struct TREAP{
         if (!node_x.left.is_null()) release_node(node_x.left);
         if (!node_x.right.is_null()) release_node(node_x.right);
         delete_node(x.filenum,x.linenum);
+    }
+    void clear(){
+        release_node(root);
+        root.set_null();
+        save();
     }
     void release(){
         release_node(root);

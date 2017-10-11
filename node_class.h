@@ -1,4 +1,8 @@
+#ifndef _MEMORY_OPERATION_H_
 #include "memory_operation.h"
+#endif
+
+#define _NODE_CLASS_H_ 0
 
 struct memory_location{
     unsigned filenum,linenum;

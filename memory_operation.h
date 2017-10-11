@@ -1,5 +1,8 @@
+#ifndef _FILE_OPERATION_H_
 #include "file_operation.h"
+#endif
 #include <sys/file.h>
+#define _MEMORY_OPERATION_H_ 0
 
 /*
 清空节点数据库内所有存储
@@ -118,6 +121,7 @@ void new_node_position(unsigned *filenum,unsigned *linenum){
 删除一个节点数据块的位置
 */
 void delete_node(int filenum,int linenum){
+    if (filenum<0||linenum<0) return;
     int fdd = open("node_pointer.dat",O_RDWR ,S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |S_IROTH);
     if (fdd <0) {
         printf("node_pointer.dat not exists\n");
@@ -297,4 +301,36 @@ void delete_record(int filenum,int linenum){
     lock.l_type = F_UNLCK;
     fcntl(fdd,F_SETLKW,&lock);
     close(fdd);
+}
+
+/*
+获取当前使用的内存总量
+*/
+unsigned long long used_memory(){
+    int fdd = open("node_pointer.dat",O_RDWR ,S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |S_IROTH);
+    if (fdd <0) {
+        printf("node_pointer.dat not exists\n");
+        return 0;
+    }
+
+    struct flock lock;
+    lock.l_type = F_WRLCK;
+    lock.l_whence = SEEK_SET;
+    lock.l_start = 0;
+    lock.l_len = 0;
+
+    fcntl(fdd,F_SETLKW,&lock);
+
+    unsigned char buffer[20];
+    read(fdd,buffer,12);
+    unsigned filenum = trans_block_to_int(buffer,0,4);
+    unsigned linenum = trans_block_to_int(buffer,4,4);
+    unsigned trash_size = trans_block_to_int(buffer,8,4);
+
+    unsigned long long ans = (unsigned long long)max_node_block_number*(unsigned long long)filenum+linenum-trash_size;
+
+    lock.l_type = F_UNLCK;
+    fcntl(fdd,F_SETLKW,&lock);
+    close(fdd);
+    return ans;
 }

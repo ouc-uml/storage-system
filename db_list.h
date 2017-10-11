@@ -1,4 +1,7 @@
+#ifndef _NODE_CLASS_H_
 #include "node_class.h"
+#endif
+#define _DB_LIST_H_ 0
 
 struct db_list{
     memory_location self;
@@ -181,10 +184,16 @@ struct db_list{
             index = node.succ;
             node.release();
         }
+        head.set_null();
+        tail.set_null();
+        size = 0;
     }
     void release(){
         release_node();
         delete_node(self.filenum,self.linenum);
+    }
+    void clear(){
+        release_node();
     }
     void save(){
         unsigned char buffer[block_size];

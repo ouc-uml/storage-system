@@ -204,7 +204,8 @@ void release() 释放整棵树的所有内存
 ```
 
 ### 第三层级
-#### db_list.h
+第三层级的类直接为上层提供接口，因此需要熟悉。一些不重要的类成员变量和函数被省去。第三层级的每个头文件只包含有一个类。
+#### db_list.h，db_list类
  - `db_list(const char x[],char k_ty)` 
    构造函数，指定名称和值的类型
   
@@ -222,7 +223,8 @@ void release() 释放整棵树的所有内存
    
  - `void push_head(unsigned x)`
    向头部添加一个无符号整型
-    
+   
+##### 注意上面重载函数并不检查值是否与k_type相容，这意味着如果k_type=1，但传入了无符号整型会导致只有前4个字节被复制
  - `void pop_tail()`
    删除末尾元素
 
@@ -234,7 +236,9 @@ void release() 释放整棵树的所有内存
  
  - `unsigned get_all_value(unsigned x[])`
    上面函数的重载，但是类型不同
-  
+   
+##### 与上面的重载函数相同，并不检查k_type的相容性
+
  - `void show()`
    显示list中所有的值
  

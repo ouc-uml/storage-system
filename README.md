@@ -46,3 +46,106 @@
    将源数据块写入到目的数据块中，block是目的数据块，block_start是写入的起始位置，data_start是源数据块开始的位置，data是源数据块。
 
  - 注意：最后四个函数是提供给第二层、第三层使用的，如果要进行数据块的转化操作，最好使用useful_tools.h中提供的uprint和uscan函数。
+
+#### memory_operation.h
+
+ - `void clear_all_nodes()`
+  
+   清除数据库中所有节点数据块。注意：危险函数，在使用之后必须重新安装数据库。
+  
+ - `void new_node_position(unsigned *filenum,unsigned *linenum)`
+  
+   分配新的存储块，把分配的存储块编号传入filenum和linenum
+
+ - `void delete_node(int filenum,int linenum)`
+  
+   释放指定位置的数据块单元。
+ - `unsigned long long used_memory()`
+  
+   获取当前使用的存储块单元总量。
+
+### 第二层级
+#### node_class.h
+##### memory_location类，用于封装一个数据块的位置
+```
+unsigned filenum 数据块文件编号
+
+unsigned linenum 数据块行编号
+
+bool is_null() 判断当前数据块位置是否为空
+
+void set_null() 将当前的数据块的位置置空
+
+memory_location = (memory_location x) 将x的位置赋给本身
+
+memory_location = (unsigned char x[]) 将x的前4字节赋给filenum，后4个字节赋给linenum
+
+bool == (memory_location x) 判断当前的位置和x的位置是否相同
+```
+
+##### node_class类，抽象类，用于规范节点类的定义格式
+```
+memory_location self 节点本身的存储位置。
+
+unsigned block_size 节点存储块的大小，一般为node_block_size(默认128)。
+
+virtual void save() = 0 纯虚函数，规范节点保存到文件的接口。
+
+virtual void load() = 0 纯虚函数，规范节点从文件中加载的接口。
+
+void create() 为当前节点分配一个存储块单元，self的值指向该单元的编号，但当前单元的其他内容不变。
+
+void release() 释放当前节点的存储块单元。
+```
+
+##### data_type类，用于封装key和value，为具体节点类提供服务
+```
+unsigned char key[32] 健存储单元，最多存储32字节信息
+
+unsigned char value[32] 值存储单元，最多存储32字节信息
+
+bool k_type 健类型，0代表unsigned，1代表unsigned char[]
+
+bool v_type 值类型，0代表unsigned，1代表unsigned char[]
+
+int cmpstr(unsigned char a[],unsigned char b[]) 比较两个无符号字符数据块的字典序大小，1代表a小于b，-1代表a大于b，0代表相等
+
+bool < (data_type &x) 比较本身key值是否小于x的key值，根据k_type选择，type为1则全文比较，否则只比较前4字节
+
+bool == (data_type &x) 比较本身key值是否等于x的key值，根据k_type选择，type为1则全文比较，否则只比较前4字节
+
+data_type& = (data_type &x) 将x的key值和value值赋给本身，根据k_type和v_type进行选择，type为1则全块复制，否则只复制4字节
+
+data_type& operator = (unsigned char x[]) 将x数据块赋给自身的key，根据type进行选择，如果为1则全块复制，否则只复制4字节
+```
+##### queue_node类 （ 继承node_class）
+```
+memory_location prev 该节点的前驱节点的存储位置编号
+
+memory_location succ 该节点的后继节点的存储位置编号
+
+data_type data 该节点存储的数据信息
+
+void save() 将节点数据信息保存到文件中
+
+void load() 从self指定的数据块中加载该节点的数据信息
+```
+
+##### binary_tree_node类 (继承node_class类)
+```
+memory_location left 左儿子的地址位置。
+
+memory_location right 右儿子的地址位置。
+
+int size 以该节点为根的子树大小。
+
+int HASH 该节点在树中的唯一标志符。
+
+int RANDOM 该节点的随机值，用于维护treap的平衡性。
+
+void save() 将该节点的数据信息保存到文件。
+
+void load() 将该节点self指向的数据块加载到节点中。
+
+binary_tree_node& = (binary_tree_node& x) 将x的除自身位置信息外的所有信息赋给该节点。
+```

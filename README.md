@@ -1,6 +1,11 @@
 # storage-system
 ## 功能
 该仓库可以被视为一个经过封装的非结构化数据库，提供了两种主要的数据结构，分别为map和list。
+
+## 环境说明
+- System:Linux/Ubuntu 16.04
+- 在第一次使用之前请编译install_db.cpp并运行该程序安装该库
+
 ## 实现方法
 该数据库的实现使用了三层架构，第一层为文件操作/存储调度层，第二层为数据结构层，第三层为数据结构管理层。
 
@@ -402,3 +407,58 @@ void release() 释放整棵树的所有内存
 - `void show_all_list()`
 
    显示所有list的名称
+
+#### useful_tools.h
+
+该库提供了几个实用的函数用于进行无符号数据块和其他类型的转换，以方便上层封装数据。
+
+ - `void uprint(unsigned char ret[],int maxlen, const char control[], ...)`
+  
+   该函数将若干个其他类型的变量封装到ret数据块中，并且其余的字节全部清零，“其余”是指maxlen长度减去已经封装好的长度的ret。
+  
+   样例：
+   ```
+   unsigned char key[32];
+   uprint(key,32,"sds","shiyan",45,"ooo");
+   printf("%s\n",key);
+   ```
+  
+   输出：`shiyan45ooo`
+   
+   |控制字符|控制字符含义                            |
+	  |--:|--------------------------------------------------------|
+	  | d | 整数以字符形式写入                                  |
+	  | u | 无符号整型以字符形式写入                             |
+	  | s | 字符串直接写入                                      |
+	  | a | 无符号数据块写入，则传入参数时后面要再跟一个写入的长度 |
+	  | c | 字符写入                                           |
+	  | x | 无符号整型以4字节数据块形式写入                       |
+   
+- `void uscan(unsigned char data[],const char control[], ...)`
+
+  将数据块中的信息解析出来，data是数据块变量，control是控制字符串。
+  
+   样例：
+   ```
+   unsigned char key[32];
+   uprint(key,32,"sxs","shiyan",45,"ooo");
+   char value1[32],value2[32];
+   unsigned value;
+   uscan(key,"sxs",value1,6,&value,value2,3);
+   printf("%s\n",value1);
+   printf("%u\n",value);
+   printf("%s\n",value2);
+   ```
+   输出：
+   ```
+   shiyan
+   45
+   ooo
+   ```
+   
+   具体控制字符：
+   | 控制字符 | 控制字符含义                                   |
+   |---------:|------------------------------------------------|
+   | s        | 数据块直接转换为字符串，传入参数时要跟一个长度 |
+   | a        | 无符号数据块转化，后面要再跟一个写入的长度     |
+   | x        | 无符号整型以4字节数据块形式转换                |

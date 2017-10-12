@@ -89,6 +89,16 @@ struct db_struct{
 		save();
 	}
 
+	bool exists_map(const char _name[]){
+        unsigned char name[32];
+        uprint(name,32,"s",_name);
+        return map1.exists(name);
+	}
+	bool exists_list(const char _name[]){
+        unsigned char name[32];
+        uprint(name,32,"s",_name);
+        return map2.exists(name);
+	}
 	db_map create_map(const char name[],char k_ty,char v_ty){
 		db_map ret(name,k_ty,v_ty);
 		ret.create();
@@ -99,6 +109,7 @@ struct db_struct{
 		put_int_to_block(value,0,ret.self.filenum);
 		put_int_to_block(value,4,ret.self.linenum);
 		map1.add(key,value);
+		save();
 		return ret;
 	}
 	db_map get_map(const char name[]){
@@ -112,7 +123,7 @@ struct db_struct{
 			ret.self.filenum = trans_block_to_int(value,0,4);
 			ret.self.linenum = trans_block_to_int(value,4,4);
 			ret.load();
-		}	
+		}
 		return ret;
 	}
 	void delete_map(const char name[]){
@@ -121,6 +132,7 @@ struct db_struct{
 		db_map tmp = get_map(name);
 		tmp.release();
 		map1.drop(key);
+		save();
 	}
 	void show_all_map(){
 		int map_num = map1.get_size();
@@ -140,6 +152,7 @@ struct db_struct{
 		put_int_to_block(value,0,ret.self.filenum);
 		put_int_to_block(value,4,ret.self.linenum);
 		map2.add(key,value);
+		save();
 		return ret;
 	}
 	db_list get_list(const char name[]){
@@ -153,7 +166,7 @@ struct db_struct{
 			ret.self.filenum = trans_block_to_int(value,0,4);
 			ret.self.linenum = trans_block_to_int(value,4,4);
 			ret.load();
-		}	
+		}
 		return ret;
 	}
 	void delete_list(const char name[]){
@@ -162,6 +175,7 @@ struct db_struct{
 		db_list tmp = get_list(name);
 		tmp.release();
 		map2.drop(key);
+		save();
 	}
 	void show_all_list(){
 		int map_num = map2.get_size();

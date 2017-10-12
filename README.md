@@ -202,3 +202,53 @@ void clear() 删除树中的所有节点
 
 void release() 释放整棵树的所有内存
 ```
+
+### 第三层级
+#### db_list.h
+ - `db_list(const char x[],char k_ty)` 
+   构造函数，指定名称和值的类型
+  
+ - `db_list(){}`
+   空构造函数，得到一个未初始化的db_list实例
+
+ - `void push_tail(unsigned char x[])`
+   向末尾添加一个无符号字符数据块
+  
+ - `void push_tail(unsigned x)`
+   向末尾添加一个无符号整型
+   
+ - `void push_head(unsigned char x[])`
+   向头部添加一个无符号字符数据块
+   
+ - `void push_head(unsigned x)`
+   向头部添加一个无符号整型
+    
+ - `void pop_tail()`
+   删除末尾元素
+
+ - `void pop_head()`
+   删除头部元素
+    
+ - `unsigned get_all_value(unsigned char x[][32])`
+   得到list中所有的值
+ 
+ - `unsigned get_all_value(unsigned x[])`
+   上面函数的重载，但是类型不同
+  
+ - `void show()`
+   显示list中所有的值
+ 
+ - `void create()`
+   给self分配一个新的存储编号
+   
+ - `void release()`
+   释放该链表
+   
+ - `void clear()`
+   清空链表中的所有节点，但链表仍然存在
+    
+ - `void save()`
+   向self指定的数据块中写入链表信息
+
+ - `void load()`
+   从self指定的数据块中载入链表信息 

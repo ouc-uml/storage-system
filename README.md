@@ -361,46 +361,44 @@ void release() 释放整棵树的所有内存
 
 - `db_struct(int any_num)`
 
-   参数没有具体含义，但是必须传入一个整数
+  参数没有具体含义，但是必须传入一个整数
    
 - `bool exists_map(const char _name[])`
-   
-   判断一个指定名称的map是否存在
-   
+   
+   判断一个指定名称的map是否存在
+   
 - `db_map create_map(const char name[],char k_ty,char v_ty)`
-   
-   创建一个map，并且返回该map实例，k_ty代表键的类型，v_ty代表值的类型，'d'代表整型，'s'代表无符号字符块，如果已经存在该名称会导致返回值的map的self指向野指针，因此必须在create之前进行检查。
-   
+   
+   创建一个map，并且返回该map实例，k_ty代表键的类型，v_ty代表值的类型，'d'代表整型，'s'代表无符号字符块，如果已经存在该名称会导致返回值的map的self指向野指针，因此必须在create之前进行检查。
+   
 - `db_map get_map(const char name[])`
 
-   根据name获取数据库中的map，如果不存在，返回的map中self是null值，可以根据self.is_null()来判断。
-   
+   根据name获取数据库中的map，如果不存在，返回的map中self是null值，可以根据self.is_null()来判断。
+   
 - `void delete_map(const char name[])`
 
-   删除数据库中的某个map，如果不存在将停止该操作
+   删除数据库中的某个map，如果不存在将停止该操作
    
 - `void show_all_map()`
 
-   显示所有map的名称
+   显示所有map的名称
    
 - `bool exists_list(const char _name[])`
 
-   判断一个指定名称的list是否存在
+   判断一个指定名称的list是否存在
 
 - `db_list create_list(const char name[],char k_ty)`
 
-   创建一个list，并返回该list的一个实例，name表示list的名称，k_ty代表的是list的值类型，'d'代表整型，'s'代表无符号字符块，同样在create之前必须检查是否已经存在该list
+   创建一个list，并返回该list的一个实例，name表示list的名称，k_ty代表的是list的值类型，'d'代表整型，'s'代表无符号字符块，同样在create之前必须检查是否已经存在该list
    
 - `db_list get_list(const char name[])`
 
-   根据name获取一个list的实例，同样可以根据self是否为null来判断是否获取失败。
-   
+   根据name获取一个list的实例，同样可以根据self是否为null来判断是否获取失败。
+   
 - `void delete_list(const char name[])`
-   
-   删除指定名称的list
+   
+   删除指定名称的list
 
 - `void show_all_list()`
 
-   显示所有list的名称
-   
-   
+   显示所有list的名称

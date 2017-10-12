@@ -211,6 +211,10 @@ void release() 释放整棵树的所有内存
 ### 第三层级
 第三层级的类直接为上层提供接口，因此需要熟悉。一些不重要的类成员变量和函数被省去。第三层级的每个头文件只包含有一个类。
 #### db_list.h，db_list类
+ - `unsigned size`
+ 
+	成员变量，list的长度
+ 
  - `db_list(const char x[],char k_ty)` 
  
    构造函数，指定名称和值的类型
@@ -462,3 +466,81 @@ void release() 释放整棵树的所有内存
    a:无符号数据块转化，后面要再跟一个写入的长度
    x:无符号整型以4字节数据块形式转换
    ```
+
+## 样例程序
+
+### db_list 插入删除
+```
+#include "db_manage.h"
+
+int main(){
+	load_configuration();
+    db_struct db(1);
+    char name[32];
+    db.create_list("shiyan",'d');
+    db_list shiyan = db.get_list("shiyan");
+
+    shiyan.push_tail(1);
+    shiyan.push_tail(2);
+    shiyan.push_tail(3);
+
+    int len = shiyan.size;
+    unsigned x[len];
+    shiyan.get_all_value(x);
+    for (int i = 0;i<len;i++)
+        printf("%u\n", x[i]);
+    printf("------------\n");
+
+    shiyan.pop_head();
+	
+    shiyan.get_all_value(x);
+    len = shiyan.size;
+    for (int i = 0;i<len;i++)
+	printf("%u\n", x[i]);
+
+    return 0;
+}
+
+```
+输出
+```
+1
+2
+3
+------------
+2
+3
+```
+
+### db_map 插入和查找
+```
+#include "db_manage.h"
+
+int main(){
+    load_configuration();
+    db_struct db(1);
+    char name[32];
+    db.create_map("shiyan",'d','s');
+    db_map shiyan = db.get_map("shiyan");
+
+    unsigned char value[32];
+    unsigned key;
+    for (int i = 0;i<10;i++){
+	key = i;
+	uprint(value,32,"sd","shiyan_",i);
+	shiyan.add(key,value);
+    }
+
+    shiyan.get_by_key(3,value);
+
+    char parsed_value[32];
+    uscan(value,"s",parsed_value,8);
+    printf("%s\n",parsed_value);
+
+    return 0;
+}
+```
+输出：
+```
+shiyan_3
+```

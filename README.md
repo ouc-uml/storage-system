@@ -401,4 +401,6 @@ void release() 释放整棵树的所有内存
 
 - `void show_all_list()`
 
-   
+   显示所有list的名称
+   
+   

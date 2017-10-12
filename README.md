@@ -273,7 +273,7 @@ void release() 释放整棵树的所有内存
  
    从self指定的数据块中载入链表信息 
 
-#### db_map.h,db_map类
+#### db_map.h，db_map类
 - `db_map(const char _name[],char k_ty,char v_ty)`
 
    构造函数，指定名称和键类型、值类型
@@ -353,3 +353,5 @@ void release() 释放整棵树的所有内存
 - `unsigned get_all_key(unsigned char x[][32])`
 
    上述函数重载
+
+##### 注意：上面所有重载函数都不检查与key和value的类型

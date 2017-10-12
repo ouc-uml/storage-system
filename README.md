@@ -149,3 +149,56 @@ void load() 将该节点self指向的数据块加载到节点中。
 
 binary_tree_node& = (binary_tree_node& x) 将x的除自身位置信息外的所有信息赋给该节点。
 ```
+
+#### treap.h
+
+###### TREAP类
+这是一种基于随机的二叉搜索平衡树，为map提供数据结构基础。
+
+```
+memory_location self 标记平衡树存储的位置
+
+memory_location root 平衡树根节点的位置
+
+bool k_type 平衡树的键类型
+
+bool v_type 平衡树的值类型
+
+unsigned hash_top 用于生成节点的hash值
+
+unsigned char name[32] 树的名称
+
+unsigned block_size 树节点的大小
+
+int get_size() 获得树的节点个数
+
+void adapt(memory_location x) 调整树节点的属性（用于左旋和右旋）
+
+void left_rot(memory_location fa,memory_location x) 左旋
+
+void right_rot(memory_location fa,memory_location x) 右旋
+
+memory_location insert(memory_location fa,memory_location x,data_type data) 向指定的子树中插入数据
+
+memory_location remove(memory_location fa,memory_location x,data_type data) 在指定的子树中删除数据
+
+void Insert(data_type data) 向树中插入数据
+
+memory_location Remove(data_type data) 在树中删除数据
+
+memory_location Find(data_type data) 在树中查找数据
+
+void show(memory_location x) 展示树中所有节点
+
+void save() 保存树的信息到self指定的文件块
+
+void load() 从self指定的文件块中加载树的信息
+
+void create() 分配一个新的地址给self
+
+void release_node(memory_location x) 释放指定子树所有节点的存储
+
+void clear() 删除树中的所有节点
+
+void release() 释放整棵树的所有内存
+```

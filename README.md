@@ -256,3 +256,64 @@ void release() 释放整棵树的所有内存
 
  - `void load()`
    从self指定的数据块中载入链表信息 
+
+#### db_map.h,db_map类
+- `db_map(const char _name[],char k_ty,char v_ty)`
+   构造函数，指定名称和键类型、值类型
+   
+- `db_map()`
+   空构造函数
+   
+- `bool exists(unsigned char key[])`
+   判断键是否存在于map中
+   
+- `bool exists(unsigned key)`
+   上述函数重载
+   
+- `void add(unsigned char _key[],unsigned char _value[])`
+   向map中增加键值对，注意如果key已经存在，将不会进行此操作。
+   
+- `void add(unsigned _key,unsigned char _value[])`
+   上述函数重载
+   
+- `void add(unsigned char _key[],unsigned _value)`
+   上述函数重载
+   
+- `void add(unsigned _key,unsigned _value)`
+   上述函数重载
+   
+- `void drop(unsigned char _key[])`
+   根据key删除指定的键值对，如果不存在key值将会停止此操作
+   
+- `void drop(unsigned _key)`
+   上述函数重载
+   
+- `int get_by_key(unsigned char key[],unsigned char value[])`
+   根据值键值获取value，如果不存在key值将会返回-1，否则返回0。
+   
+- `int get_by_key(unsigned char key[],unsigned *value)`
+   上述函数重载
+   
+- `int get_by_key(unsigned key,unsigned char value[])`
+   上述函数重载
+   
+- `int get_by_key(unsigned key,unsigned *value)`
+   上述函数重载
+   
+- `int update(unsigned char key[],unsigned char value[])`
+   根据指定的key值，用value对该键值对进行更新。如果key不存在，将会返回-1，否则返回0
+   
+- `int update(unsigned char key[],unsigned value)`
+   上述函数重载
+   
+- `int update(unsigned key,unsigned char value[])`
+   上述函数重载
+   
+- `int update(unsigned key,unsigned value)`
+   上述函数重载
+   
+- `unsigned get_all_key(unsigned x[])`
+   获取map中所有的key值，结果存入到x数组中
+   
+- `unsigned get_all_key(unsigned char x[][32])`
+   上述函数重载

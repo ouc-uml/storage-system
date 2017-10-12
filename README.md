@@ -362,6 +362,10 @@ void release() 释放整棵树的所有内存
 - `db_struct(int any_num)`
 
    参数没有具体含义，但是必须传入一个整数
+   
+- `bool exists_map(const char _name[])`
+   
+   判断一个指定名称的map是否存在
    
 - `db_map create_map(const char name[],char k_ty,char v_ty)`
    
@@ -379,6 +383,10 @@ void release() 释放整棵树的所有内存
 
    显示所有map的名称
    
+- `bool exists_list(const char _name[])`
+
+   判断一个指定名称的list是否存在
+
 - `db_list create_list(const char name[],char k_ty)`
 
    创建一个list，并返回该list的一个实例，name表示list的名称，k_ty代表的是list的值类型，'d'代表整型，'s'代表无符号字符块，同样在create之前必须检查是否已经存在该list
@@ -393,4 +401,4 @@ void release() 释放整棵树的所有内存
 
 - `void show_all_list()`
 
-   
+   

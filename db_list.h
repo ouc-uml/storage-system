@@ -19,7 +19,10 @@ struct db_list{
         if (k_ty == 'd') k_type = 0;
         else k_type = 1;
     }
-    db_list(){}
+    db_list(){
+        block_size = node_block_size;
+        size = 0;
+    }
     void push_tail(unsigned char x[]){
         size++;
         queue_node node_x;
@@ -157,6 +160,76 @@ struct db_list{
             index = node.succ;
         }
         return num;
+    }
+    int update(unsigned index,unsigned x){
+        if (index>=size) return -1;
+
+        memory_location tmp = head;
+        queue_node node;
+        node.self = tmp;
+        node.load();
+
+        for (int i = 0;i<index;i++){
+            tmp = node.succ;
+            node.self = tmp;
+            node.load();
+        }
+
+        put_int_to_block(node.data.key,0,x);
+        node.save();
+        return 0;
+    }
+    int update(unsigned index,unsigned char x[]){
+        if (index>=size) return -1;
+
+        memory_location tmp = head;
+        queue_node node;
+        node.self = tmp;
+        node.load();
+
+        for (int i = 0;i<index;i++){
+            tmp = node.succ;
+            node.self = tmp;
+            node.load();
+        }
+
+        put_char_to_block(node.data.key,0,0,32,x);
+        node.save();
+        return 0;
+    }
+    int get_by_index(int index,unsigned *value){        
+        if (index>=size) return -1;
+
+        memory_location tmp = head;
+        queue_node node;
+        node.self = tmp;
+        node.load();
+
+        for (int i = 0;i<index;i++){
+            tmp = node.succ;
+            node.self = tmp;
+            node.load();
+        }
+
+        *value = trans_block_to_int(node.data.key,0,4);
+        return 0;
+    }
+    int get_by_index(int index,unsigned char value[]){        
+        if (index>=size) return -1;
+
+        memory_location tmp = head;
+        queue_node node;
+        node.self = tmp;
+        node.load();
+
+        for (int i = 0;i<index;i++){
+            tmp = node.succ;
+            node.self = tmp;
+            node.load();
+        }
+
+        memcpy(value,node.data.key,32);
+        return 0;
     }
     void show(){
         memory_location index = head;

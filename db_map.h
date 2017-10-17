@@ -212,8 +212,8 @@ struct db_map : public TREAP{
         binary_tree_node node;
         node.self = root;
         node.load();
-        x[num++]=trans_block_to_int(node.data.key,0,4);
         num+=get_key(node.left,x,num);
+        x[num++]=trans_block_to_int(node.data.key,0,4);
         num+=get_key(node.right,x,num);
         return node.size;
     }
@@ -222,8 +222,8 @@ struct db_map : public TREAP{
         binary_tree_node node;
         node.self = root;
         node.load();
-        memcpy(x[num++],node.data.key,32);
         num+=get_key(node.left,x,num);
+        memcpy(x[num++],node.data.key,32);
         num+=get_key(node.right,x,num);
         return node.size;
     }

@@ -286,23 +286,18 @@ struct TREAP{
         right_node.self = node_x.right;
         if (right_node.self.is_null()) right_node.data.key[0] = 0;
         else  right_node.load();
-        if (k_type) printf("%s %s %s ",node_x.data.key,left_node.data.key,right_node.data.key);
+
+        if (!node_x.left.is_null()) show(node_x.left);
+        if (k_type) printf("\"%s\"\t:\t",node_x.data.key);
         else {
             unsigned tmp = trans_block_to_int(node_x.data.key,0,4);
-            unsigned tmp1 = trans_block_to_int(left_node.data.key,0,4);
-            unsigned tmp2 = trans_block_to_int(right_node.data.key,0,4);
-            printf("%d ",tmp);
-            if (!left_node.self.is_null()) printf("%d ",tmp1);
-            else printf("x ");
-            if (!right_node.self.is_null()) printf("%d ",tmp2);
-            else printf("x ");
+            printf("%d\t:\t",tmp);
         }
-        if (v_type) printf("%s\n",node_x.data.value);
+        if (v_type) printf("\"%s\"\n",node_x.data.value);
         else {
             unsigned tmp = trans_block_to_int(node_x.data.value,0,4);
             printf("%d\n",tmp);
         }
-        if (!node_x.left.is_null()) show(node_x.left);
         if (!node_x.right.is_null()) show(node_x.right);
 	}
 

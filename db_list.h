@@ -23,6 +23,27 @@ struct db_list{
         block_size = node_block_size;
         size = 0;
     }
+    void save(){
+        unsigned char buffer[block_size];
+        put_int_to_block(buffer,0,head.filenum);
+        put_int_to_block(buffer,4,head.linenum);
+        put_int_to_block(buffer,8,tail.filenum);
+        put_int_to_block(buffer,12,tail.linenum);
+        put_int_to_block(buffer,16,size);
+        put_char_to_block(buffer,20,0,32,name);
+        put_int_to_block(buffer,52,k_type?128:0);
+        write_node_block(buffer,self.filenum,self.linenum);
+    }
+    void load(){
+        unsigned char buffer[block_size];
+        read_node_block(self.filenum,self.linenum,buffer);
+
+        head = buffer;
+        tail = buffer+8;
+        size = trans_block_to_int(buffer,16,4);
+        trans_block_to_char_array(buffer,20,32,name);
+        k_type = trans_block_to_int(buffer,52,4) == 128;
+    }
     void push_tail(unsigned char x[]){
         size++;
         queue_node node_x;
@@ -42,6 +63,7 @@ struct db_list{
             tail = node_x.self;
         }
         node_x.save();
+        save();
     }
     void push_tail(unsigned x){
         size++;
@@ -62,6 +84,7 @@ struct db_list{
             tail = node_x.self;
         }
         node_x.save();
+        save();
     }
     void push_head(unsigned char x[]){
         size++;
@@ -82,6 +105,7 @@ struct db_list{
             head = node_x.self;
         }
         node_x.save();
+        save();
     }
     void push_head(unsigned x){
         size++;
@@ -102,6 +126,7 @@ struct db_list{
             head = node_x.self;
         }
         node_x.save();
+        save();
     }
     void pop_tail(){
         if (size == 0) return ;
@@ -119,6 +144,7 @@ struct db_list{
         }
         else head.set_null();
         delete_node(tmp.filenum,tmp.linenum);
+        save();
     }
     void pop_head(){
         if (size == 0) return ;
@@ -136,6 +162,7 @@ struct db_list{
         }
         else tail.set_null();
         delete_node(tmp.filenum,tmp.linenum);
+        save();
     }
     unsigned get_all_value(unsigned char x[][32]){
         memory_location index = head;
@@ -177,6 +204,7 @@ struct db_list{
 
         put_int_to_block(node.data.key,0,x);
         node.save();
+        save();
         return 0;
     }
     int update(unsigned index,unsigned char x[]){
@@ -195,6 +223,7 @@ struct db_list{
 
         put_char_to_block(node.data.key,0,0,32,x);
         node.save();
+        save();
         return 0;
     }
     int get_by_index(int index,unsigned *value){        
@@ -245,6 +274,25 @@ struct db_list{
             index = node.succ;
         }
     }
+    void show(int start,int end){
+        int nn = 0;
+        memory_location index = head;
+        while (!index.is_null()){
+            queue_node node;
+            node.self = index;
+            node.load();
+            if (nn>=start && nn<=end){
+                printf("%d\t:\t", nn);
+            if (k_type) printf("\"%s\"\n",node.data.key);
+            else {
+                unsigned tmp = trans_block_to_int(node.data.key,0,4);
+                printf("%u\n",tmp);
+            }
+            }
+            index = node.succ;
+            nn++;
+        }
+    }
     void create(){
         new_node_position(&self.filenum,&self.linenum);
     }
@@ -267,26 +315,5 @@ struct db_list{
     }
     void clear(){
         release_node();
-    }
-    void save(){
-        unsigned char buffer[block_size];
-        put_int_to_block(buffer,0,head.filenum);
-        put_int_to_block(buffer,4,head.linenum);
-        put_int_to_block(buffer,8,tail.filenum);
-        put_int_to_block(buffer,12,tail.linenum);
-        put_int_to_block(buffer,16,size);
-        put_char_to_block(buffer,20,0,32,name);
-        put_int_to_block(buffer,52,k_type?128:0);
-        write_node_block(buffer,self.filenum,self.linenum);
-    }
-    void load(){
-        unsigned char buffer[block_size];
-        read_node_block(self.filenum,self.linenum,buffer);
-
-        head = buffer;
-        tail = buffer+8;
-        size = trans_block_to_int(buffer,16,4);
-        trans_block_to_char_array(buffer,20,32,name);
-        k_type = trans_block_to_int(buffer,52,4) == 128;
     }
 };

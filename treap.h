@@ -2,6 +2,10 @@
 #include "node_class.h"
 #endif
 
+#ifndef _USEFUL_TOOLS_H
+#include "useful_tools.h"
+#endif 
+
 #include <iostream>
 #include <time.h>
 #define _TREAP_H_ 0
@@ -275,7 +279,8 @@ struct TREAP{
 		}
 	}
 
-	void show(memory_location x){
+	int show(memory_location x,int index){
+        if (x.is_null()) return index;
         binary_tree_node node_x,left_node,right_node;
         node_x.self = x;
         node_x.load();
@@ -287,18 +292,29 @@ struct TREAP{
         if (right_node.self.is_null()) right_node.data.key[0] = 0;
         else  right_node.load();
 
-        if (!node_x.left.is_null()) show(node_x.left);
-        if (k_type) printf("\"%s\"\t:\t",node_x.data.key);
+        if (!node_x.left.is_null()) index+=show(node_x.left,index);
+        if (k_type) {
+            printf("[%d]\t\"",index++);
+            uout(node_x.data.key,32);
+            printf("\"\t:\t");
+        }
         else {
             unsigned tmp = trans_block_to_int(node_x.data.key,0,4);
-            printf("%d\t:\t",tmp);
+            printf("[%d]\t%d\t:\t",index++,tmp);
         }
-        if (v_type) printf("\"%s\"\n",node_x.data.value);
+        if (v_type) {
+            printf("\"");
+            uout(node_x.data.value,32);
+            printf("\"");
+            printf("\n");
+        }
         else {
             unsigned tmp = trans_block_to_int(node_x.data.value,0,4);
             printf("%d\n",tmp);
         }
-        if (!node_x.right.is_null()) show(node_x.right);
+        if (!node_x.right.is_null()) index+=show(node_x.right,index);
+
+        return index;
 	}
 
 	void save(){

@@ -4,8 +4,8 @@ int main(){
     load_configuration();
     db_struct db(1);
 
-    db_list shiyan = db.get_list("shiyan");
+    db_map shiyan = db.get_map("shiyan");
 
-    printf("%d\n", shiyan.size);
+ 	printf("%d %d\n",shiyan.self.filenum,shiyan.self.linenum);
     return 0;
 }

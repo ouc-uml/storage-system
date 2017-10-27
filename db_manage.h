@@ -99,19 +99,6 @@ struct db_struct{
         uprint(name,32,"s",_name);
         return map2.exists(name);
 	}
-	db_map create_map(const char name[],char k_ty,char v_ty){
-		db_map ret(name,k_ty,v_ty);
-		ret.create();
-		ret.save();
-
-		unsigned char key[32],value[32];
-		uprint(key,32,"s",name);
-		put_int_to_block(value,0,ret.self.filenum);
-		put_int_to_block(value,4,ret.self.linenum);
-		map1.add(key,value);
-		save();
-		return ret;
-	}
 	db_map get_map(const char name[]){
 		unsigned char key[32],value[32];
 		uprint(key,32,"s",name);
@@ -124,6 +111,20 @@ struct db_struct{
 			ret.self.linenum = trans_block_to_int(value,4,4);
 			ret.load();
 		}
+		return ret;
+	}
+	db_map create_map(const char name[],char k_ty,char v_ty){
+		if (exists_map(name)) return get_map(name);
+		db_map ret(name,k_ty,v_ty);
+		ret.create();
+		ret.save();
+
+		unsigned char key[32],value[32];
+		uprint(key,32,"s",name);
+		put_int_to_block(value,0,ret.self.filenum);
+		put_int_to_block(value,4,ret.self.linenum);
+		map1.add(key,value);
+		save();
 		return ret;
 	}
 	void delete_map(const char name[]){
@@ -142,19 +143,6 @@ struct db_struct{
 			printf("%s\n", ret[i]);
 	}
 
-	db_list create_list(const char name[],char k_ty){
-		db_list ret(name,k_ty);
-		ret.create();
-		ret.save();
-
-		unsigned char key[32],value[32];
-		uprint(key,32,"s",name);
-		put_int_to_block(value,0,ret.self.filenum);
-		put_int_to_block(value,4,ret.self.linenum);
-		map2.add(key,value);
-		save();
-		return ret;
-	}
 	db_list get_list(const char name[]){
 		unsigned char key[32],value[32];
 		uprint(key,32,"s",name);
@@ -167,6 +155,20 @@ struct db_struct{
 			ret.self.linenum = trans_block_to_int(value,4,4);
 			ret.load();
 		}
+		return ret;
+	}
+	db_list create_list(const char name[],char k_ty){
+		if (exists_list(name)) return get_list(name);
+		db_list ret(name,k_ty);
+		ret.create();
+		ret.save();
+
+		unsigned char key[32],value[32];
+		uprint(key,32,"s",name);
+		put_int_to_block(value,0,ret.self.filenum);
+		put_int_to_block(value,4,ret.self.linenum);
+		map2.add(key,value);
+		save();
 		return ret;
 	}
 	void delete_list(const char name[]){

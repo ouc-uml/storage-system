@@ -282,7 +282,7 @@ struct db_list{
             node.self = index;
             node.load();
             if (nn>=start && nn<=end){
-                printf("%d\t:\t", nn);
+                printf("[%d]\t:\t", nn);
             if (k_type) printf("\"%s\"\n",node.data.key);
             else {
                 unsigned tmp = trans_block_to_int(node.data.key,0,4);

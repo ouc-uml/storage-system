@@ -2,6 +2,10 @@
 #include <stdio.h>
 #define _USEFUL_TOOLS_H_ 0
 
+void uout(unsigned char block[],int num){
+    for (int i = 0;i<num;i++)
+        putchar(block[i]);
+}
 void uprint(unsigned char ret[],int maxlen, const char control[], ...){
     memset(ret,0,maxlen);
     va_list ap;

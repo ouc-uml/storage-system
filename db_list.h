@@ -8,10 +8,10 @@ struct db_list{
     memory_location head,tail;
     bool k_type;
     unsigned size,block_size;
-    unsigned char name[32];
+    unsigned char name[k_len];
 
     db_list(const char x[],char k_ty){
-        memcpy(name,x,32);
+        memcpy(name,x,k_len);
         head.set_null();
         tail.set_null();
         block_size = node_block_size;
@@ -30,8 +30,8 @@ struct db_list{
         put_int_to_block(buffer,8,tail.filenum);
         put_int_to_block(buffer,12,tail.linenum);
         put_int_to_block(buffer,16,size);
-        put_char_to_block(buffer,20,0,32,name);
-        put_int_to_block(buffer,52,k_type?128:0);
+        put_char_to_block(buffer,20,0,k_len,name);
+        put_int_to_block(buffer,20+k_len,k_type?128:0);
         write_node_block(buffer,self.filenum,self.linenum);
     }
     void load(){
@@ -41,14 +41,14 @@ struct db_list{
         head = buffer;
         tail = buffer+8;
         size = trans_block_to_int(buffer,16,4);
-        trans_block_to_char_array(buffer,20,32,name);
-        k_type = trans_block_to_int(buffer,52,4) == 128;
+        trans_block_to_char_array(buffer,20,k_len,name);
+        k_type = trans_block_to_int(buffer,20+k_len,4) == 128;
     }
     void push_tail(unsigned char x[]){
         size++;
         queue_node node_x;
         node_x.create();
-        memcpy(node_x.data.key,x,32);
+        memcpy(node_x.data.key,x,q_len);
 
         if (head.is_null() && tail.is_null()){
             tail = head = node_x.self;
@@ -90,7 +90,7 @@ struct db_list{
         size++;
         queue_node node_x;
         node_x.create();
-        memcpy(node_x.data.key,x,32);
+        memcpy(node_x.data.key,x,q_len);
 
         if (head.is_null() && tail.is_null()){
             tail = head = node_x.self;
@@ -164,14 +164,14 @@ struct db_list{
         delete_node(tmp.filenum,tmp.linenum);
         save();
     }
-    unsigned get_all_value(unsigned char x[][32]){
+    unsigned get_all_value(unsigned char x[][q_len]){
         memory_location index = head;
         unsigned num = 0;
         while (!index.is_null()){
             queue_node node;
             node.self = index;
             node.load();
-            memcpy(x[num++],node.data.key,32);
+            memcpy(x[num++],node.data.key,q_len);
             index = node.succ;
         }
         return num;
@@ -221,7 +221,7 @@ struct db_list{
             node.load();
         }
 
-        put_char_to_block(node.data.key,0,0,32,x);
+        put_char_to_block(node.data.key,0,0,q_len,x);
         node.save();
         save();
         return 0;
@@ -257,7 +257,7 @@ struct db_list{
             node.load();
         }
 
-        memcpy(value,node.data.key,32);
+        memcpy(value,node.data.key,q_len);
         return 0;
     }
     void show(){

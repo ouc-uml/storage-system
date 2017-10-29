@@ -50,19 +50,27 @@ struct node_class{
     }
 };
 
-struct data_type {
-    unsigned char key[32],value[32];
+struct data_type1{
+    unsigned char key[q_len];
+    bool k_type;
+    data_type1(){
+        k_type = 0;
+    }
+};
+
+struct data_type2 {
+    unsigned char key[k_len],value[v_len];
     bool k_type,v_type;//0 means unsigned,1 means unsigned char[]
-    data_type(){
+    data_type2(){
         k_type = v_type = 0;
     }
     int cmpstr(unsigned char a[],unsigned char b[]){
-        for (int i = 0;i<32;i++)
+        for (int i = 0;i<k_len;i++)
             if (a[i]<b[i]) return 1;
             else if (b[i]<a[i]) return -1;
         return 0;
     }
-    bool operator < (data_type &x){
+    bool operator < (data_type2 &x){
         if (k_type == 0){
             unsigned key1,key2;
             key1 = trans_block_to_int(key,0,4);
@@ -71,7 +79,7 @@ struct data_type {
         }
         return cmpstr(this->key,x.key)==1;
     }
-    bool operator == (data_type &x){
+    bool operator == (data_type2 &x){
         if (k_type == 0){
             unsigned key1,key2;
             key1 = trans_block_to_int(key,0,4);
@@ -80,23 +88,23 @@ struct data_type {
         }
         return cmpstr(this->key, x.key) == 0;
     }
-    data_type& operator = (data_type &x){
+    data_type2& operator = (data_type2 &x){
         if (k_type == 0) memcpy(this->key,x.key,4);
-        else memcpy(this->key,x.key,32);
+        else memcpy(this->key,x.key,k_len);
         if (v_type == 0) memcpy(this->value,x.value,4);
-        else memcpy(this->value,x.value,32);
+        else memcpy(this->value,x.value,v_len);
         return *this;
     }
-    data_type& operator = (unsigned char x[]){
+    data_type2& operator = (unsigned char x[]){
         if (k_type == 0) memcpy(this->key,x,4);
-        else memcpy(this->key,x,32);
+        else memcpy(this->key,x,k_len);
         return *this;
     }
 };
 
 struct queue_node : public node_class{
     memory_location prev,succ;
-    data_type data;
+    data_type1 data;
     queue_node(){
         prev.set_null();
         succ.set_null();
@@ -109,10 +117,10 @@ struct queue_node : public node_class{
         put_int_to_block(buffer,4,prev.linenum);
         put_int_to_block(buffer,8,succ.filenum);
         put_int_to_block(buffer,12,succ.linenum);
-        put_char_to_block(buffer,16,0,32,data.key);
+        put_char_to_block(buffer,16,0,q_len,data.key);
         unsigned tmpmode = 0;
         if (data.k_type) tmpmode = 128;
-        put_int_to_block(buffer,48,tmpmode);
+        put_int_to_block(buffer,16+q_len,tmpmode);
         write_node_block(buffer,self.filenum,self.linenum);
     }
 
@@ -123,15 +131,15 @@ struct queue_node : public node_class{
 
         prev = buffer;
         succ = buffer+8;
-        trans_block_to_char_array(buffer,16,32,data.key);
-        data.k_type = trans_block_to_int(buffer,48,1) == 128;
+        trans_block_to_char_array(buffer,16,q_len,data.key);
+        data.k_type = trans_block_to_int(buffer,16+q_len,1) == 128;
     }
 };
 
 struct binary_tree_node : public node_class{
     memory_location left,right;
     int size,HASH,RANDOM;
-    data_type data;
+    data_type2 data;
     binary_tree_node(){
         left.set_null();
         right.set_null();
@@ -148,12 +156,12 @@ struct binary_tree_node : public node_class{
         put_int_to_block(buffer,16,size);
         put_int_to_block(buffer,20,HASH);
         put_int_to_block(buffer,24,RANDOM);
-        put_char_to_block(buffer,28,0,32,data.key);
-        put_char_to_block(buffer,60,0,32,data.value);
+        put_char_to_block(buffer,28,0,k_len,data.key);
+        put_char_to_block(buffer,k_len+28,0,v_len,data.value);
         unsigned tmpmode = 0;
         if (data.k_type) tmpmode |= 128;
         if (data.v_type) tmpmode |= 64;
-        put_int_to_block(buffer,92,tmpmode);
+        put_int_to_block(buffer,k_len+v_len+28,tmpmode);
 
         write_node_block(buffer,self.filenum,self.linenum);
     }
@@ -176,10 +184,10 @@ struct binary_tree_node : public node_class{
         size = trans_block_to_int(buffer,16,4);
         HASH = trans_block_to_int(buffer,20,4);
         RANDOM = trans_block_to_int(buffer,24,4);
-        trans_block_to_char_array(buffer,28,32,data.key);
-        trans_block_to_char_array(buffer,60,32,data.value);
-        data.k_type = (trans_block_to_int(buffer,92,4) & 128) != 0;
-        data.v_type = (trans_block_to_int(buffer,92,4) & 64) != 0;
+        trans_block_to_char_array(buffer,28,k_len,data.key);
+        trans_block_to_char_array(buffer,28+k_len,v_len,data.value);
+        data.k_type = (trans_block_to_int(buffer,28+k_len+v_len,4) & 128) != 0;
+        data.v_type = (trans_block_to_int(buffer,28+k_len+v_len,4) & 64) != 0;
     }
 
     binary_tree_node& operator = (binary_tree_node& x){

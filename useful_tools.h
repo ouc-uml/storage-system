@@ -1,17 +1,18 @@
 #include <stdarg.h>
 #include <stdio.h>
+#include <math.h>
 #define _USEFUL_TOOLS_H_ 0
 
 void uout(unsigned char block[],int num){
     for (int i = 0;i<num;i++)
         putchar(block[i]);
 }
-void uprint(unsigned char ret[],int maxlen, const char control[], ...){
+void uprint(unsigned char ret[],unsigned maxlen, const char control[], ...){
     memset(ret,0,maxlen);
     va_list ap;
     va_start(ap,control);
 
-    char buffer[32];
+    char buffer[v_len+k_len];
     int len = strlen(control),start_point = 0;
     for (int i = 0;i<len;i++){
         if (control[i] == 'd') {
@@ -31,6 +32,7 @@ void uprint(unsigned char ret[],int maxlen, const char control[], ...){
         else if (control[i] == 's'){
             const char* tmp = va_arg(ap, const char*);
             int len1 = strlen(tmp);
+            if (len1>maxlen) len1 = maxlen;
             memcpy(ret+start_point,tmp,len1);
             start_point += len1;
         }

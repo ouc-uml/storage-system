@@ -6,10 +6,14 @@
 #include <fcntl.h>
 #define _FILE_OPERATION_H_ 0
 
+#define k_len 32
+#define v_len 64
+#define q_len 64
+
 char message_queue[32];
 unsigned node_block_size = 128;
 unsigned file_block_size = 1024;
-char folder_name[64] = "database";
+char folder_name[256] = "database";
 unsigned max_node_block_number = 8192;
 
 /*
@@ -33,6 +37,7 @@ void load_configuration(){
 
     fscanf(fp,"%s",tmp);
     fscanf(fp,"%u",&max_node_block_number);
+
     chdir(folder_name);
 
     fclose(fp);

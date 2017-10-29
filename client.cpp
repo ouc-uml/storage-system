@@ -28,7 +28,7 @@ int main(){
 			if (args[1] == "db"){
 				if (args[2] == "map"){
 					int size = db.map1.get_size();
-					unsigned char map_name[size][32];
+					unsigned char map_name[size][k_len];
 					db.map1.get_all_key(map_name);
 
 					regex e(args[3]);
@@ -39,7 +39,7 @@ int main(){
 				}
 				if (args[2] == "list"){
 					int size = db.map2.get_size();
-					unsigned char list_name[size][32];
+					unsigned char list_name[size][k_len];
 					db.map2.get_all_key(list_name);
 
 					regex e(args[3]);
@@ -78,21 +78,21 @@ int main(){
 				db_map tmp = db.get_map(args[2].c_str());
 				if (tmp.self.is_null()) {printf("map not exist\n");continue;}
 				if (tmp.k_type&&tmp.v_type) {
-					unsigned char key[32],value[32];
-					uprint(key,32,"s",args[3].c_str());
-					uprint(value,32,"s",args[4].c_str());
+					unsigned char key[k_len],value[v_len];
+					uprint(key,k_len,"s",args[3].c_str());
+					uprint(value,v_len,"s",args[4].c_str());
 					tmp.add(key,value);
 				}
 				else if (tmp.k_type&&!tmp.v_type) {
 					unsigned tmp_value = atoi(args[4].c_str());
-					unsigned char key[32];
-					uprint(key,32,"s",args[3].c_str());
+					unsigned char key[k_len];
+					uprint(key,k_len,"s",args[3].c_str());
 					tmp.add(key,tmp_value);
 				}
 				else if (!tmp.k_type&&tmp.v_type) {
 					unsigned tmp_key = atoi(args[3].c_str());
-					unsigned char value[32];
-					uprint(value,32,"s",args[4].c_str());
+					unsigned char value[v_len];
+					uprint(value,v_len,"s",args[4].c_str());
 					tmp.add(tmp_key,value);
 				}
 				else {
@@ -105,8 +105,8 @@ int main(){
 				db_list tmp = db.get_list(args[2].c_str());
 				if (tmp.self.is_null()) {printf("list not exist\n");continue;}
 				if (tmp.k_type) {
-					unsigned char key[32];
-					uprint(key,32,"s",args[3].c_str());
+					unsigned char key[q_len];
+					uprint(key,q_len,"s",args[3].c_str());
 					tmp.push_tail(key);
 				}
 				else {
@@ -128,8 +128,8 @@ int main(){
 			db_struct db(1);
 			db_map tmp = db.get_map(args[1].c_str());
 			if (tmp.self.is_null()) {printf("map not exist\n");continue;}
-			unsigned char key[32];
-			uprint(key,32,"s",args[2].c_str());
+			unsigned char key[k_len];
+			uprint(key,k_len,"s",args[2].c_str());
 			tmp.drop(key);
 		}
 		else if (args[0] == "pop"){
@@ -143,19 +143,19 @@ int main(){
 			if (args[1] == "map"){
 				db_map tmp = db.get_map(args[2].c_str());
 				if (tmp.self.is_null()) {printf("map not exist\n");continue;}
-				unsigned char key[32],value[32];
+				unsigned char key[k_len],value[v_len];
 				if (tmp.k_type && tmp.v_type){
-					uprint(key,32,"s",args[3].c_str());
-					uprint(value,32,"s",args[4].c_str());
+					uprint(key,k_len,"s",args[3].c_str());
+					uprint(value,v_len,"s",args[4].c_str());
 					tmp.update(key,value);
 				}
 				else if (tmp.k_type && !tmp.v_type){
-					uprint(key,32,"s",args[3].c_str());
+					uprint(key,k_len,"s",args[3].c_str());
 					unsigned value = atoi(args[4].c_str());
 					tmp.update(key,value);
 				}
 				else if (!tmp.k_type && tmp.v_type){
-					uprint(value,32,"s",args[4].c_str());
+					uprint(value,v_len,"s",args[4].c_str());
 					unsigned key = atoi(args[3].c_str());
 					tmp.update(key,value);
 				}
@@ -170,9 +170,9 @@ int main(){
 				if (tmp.self.is_null()) {printf("list not exist\n");continue;}
 
 				int index = atoi(args[3].c_str());
-				unsigned char value[32];
+				unsigned char value[q_len];
 				if (tmp.k_type){
-					uprint(value,32,"s",args[4].c_str());
+					uprint(value,q_len,"s",args[4].c_str());
 					tmp.update(index,value);
 				}
 				else {
@@ -201,14 +201,14 @@ int main(){
 			db_struct db(1);
 			db_map tmp = db.get_map(args[1].c_str());
 			if (tmp.self.is_null()) {printf("map not exist\n");continue;}
-			unsigned char key[32],value[32];
+			unsigned char key[k_len],value[v_len];
 			if (tmp.k_type && tmp.v_type){
-				uprint(key,32,"s",args[2].c_str());
+				uprint(key,k_len,"s",args[2].c_str());
 				tmp.get_by_key(key,value);
 				printf("%s\n", value);
 			}
 			else if (tmp.k_type && !tmp.v_type){
-				uprint(key,32,"s",args[2].c_str());
+				uprint(key,k_len,"s",args[2].c_str());
 				unsigned value;
 				tmp.get_by_key(key,&value);
 				printf("%u\n", value);

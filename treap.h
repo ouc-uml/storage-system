@@ -101,7 +101,7 @@ struct TREAP{
 		adapt(x);
 		if (root == x) root = y;
 	}
-    memory_location insert(memory_location fa,memory_location x,data_type data){
+    memory_location insert(memory_location fa,memory_location x,data_type2 data){
 		if (x.is_null()){
 			binary_tree_node node_x;
 			node_x.create();
@@ -154,7 +154,7 @@ struct TREAP{
             }
 		}
 	}
-    memory_location remove(memory_location fa,memory_location x,data_type data){
+    memory_location remove(memory_location fa,memory_location x,data_type2 data){
         memory_location null;
         null.set_null();
 		if (x.is_null()) return null;
@@ -242,16 +242,16 @@ struct TREAP{
 			}
 		}
 	}
-	void Insert(data_type data){
+	void Insert(data_type2 data){
         memory_location null;
         null.set_null();
         insert(null,root,data);
 	}
-	memory_location Remove(data_type data){
+	memory_location Remove(data_type2 data){
         return remove(root,root,data);
 	}
 
-    memory_location Find(data_type data){
+    memory_location Find(data_type2 data){
         data.k_type = k_type;
 		if (root.is_null()) {
             memory_location null;
@@ -295,7 +295,7 @@ struct TREAP{
         if (!node_x.left.is_null()) index+=show(node_x.left,index);
         if (k_type) {
             printf("[%d]\t\"",index++);
-            uout(node_x.data.key,32);
+            uout(node_x.data.key,k_len);
             printf("\"\t:\t");
         }
         else {
@@ -304,7 +304,7 @@ struct TREAP{
         }
         if (v_type) {
             printf("\"");
-            uout(node_x.data.value,32);
+            uout(node_x.data.value,v_len);
             printf("\"");
             printf("\n");
         }

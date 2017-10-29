@@ -6,9 +6,7 @@
 struct db_map : public TREAP{
     db_map(const char _name[],char k_ty,char v_ty){
         memset(name,0,sizeof name);
-        for (int i = 0;i<32;i++)
-            if (!_name[i]) break;
-            else name[i] = _name[i];
+        memcpy(name,_name,k_len);
         if (k_ty == 'd') k_type = 0;
         else k_type = 1;
         if (v_ty == 'd') v_type = 0;
@@ -30,15 +28,15 @@ struct db_map : public TREAP{
 
     bool exists(unsigned char key[]){
         memory_location ret;
-        data_type tmp;
-        put_char_to_block(tmp.key,0,0,32,key);
+        data_type2 tmp;
+        put_char_to_block(tmp.key,0,0,k_len,key);
         ret = Find(tmp);
 
         return !ret.is_null();
     }
     bool exists(unsigned key){
         memory_location ret;
-        data_type tmp;
+        data_type2 tmp;
         put_int_to_block(tmp.key,0,key);
         ret = Find(tmp);
 
@@ -47,31 +45,31 @@ struct db_map : public TREAP{
 
     void add(unsigned char _key[],unsigned char _value[]){
         if (exists(_key)) return ;
-        data_type tmp;
-        memcpy(tmp.key,_key,32);
-        memcpy(tmp.value,_value,32);
+        data_type2 tmp;
+        memcpy(tmp.key,_key,k_len);
+        memcpy(tmp.value,_value,v_len);
         Insert(tmp);
         save();
     }
     void add(unsigned _key,unsigned char _value[]){
         if (exists(_key)) return ;
-        data_type tmp;
+        data_type2 tmp;
         put_int_to_block(tmp.key,0,_key);
-        put_char_to_block(tmp.value,0,0,32,_value);
+        put_char_to_block(tmp.value,0,0,v_len,_value);
         Insert(tmp);
         save();
     }
     void add(unsigned char _key[],unsigned _value){
         if (exists(_key)) return ;
-        data_type tmp;
-        put_char_to_block(tmp.key,0,0,32,_key);
+        data_type2 tmp;
+        put_char_to_block(tmp.key,0,0,k_len,_key);
         put_int_to_block(tmp.value,0,_value);
         Insert(tmp);
         save();
     }
     void add(unsigned _key,unsigned _value){
         if (exists(_key)) return ;
-        data_type tmp;
+        data_type2 tmp;
         put_int_to_block(tmp.key,0,_key);
         put_int_to_block(tmp.value,0,_value);
         Insert(tmp);
@@ -80,14 +78,14 @@ struct db_map : public TREAP{
 
     void drop(unsigned char _key[]){
         if (!exists(_key)) return ;
-        data_type tmp;
-        put_char_to_block(tmp.key,0,0,32,_key);
+        data_type2 tmp;
+        put_char_to_block(tmp.key,0,0,k_len,_key);
         Remove(tmp);
         save();
     }
     void drop(unsigned _key){
         if (!exists(_key)) return ;
-        data_type tmp;
+        data_type2 tmp;
         put_int_to_block(tmp.key,0,_key);
         Remove(tmp);
         save();
@@ -95,21 +93,21 @@ struct db_map : public TREAP{
 
     int get_by_key(unsigned char key[],unsigned char value[]){
         memory_location ret;
-        data_type tmp;
-        put_char_to_block(tmp.key,0,0,32,key);
+        data_type2 tmp;
+        put_char_to_block(tmp.key,0,0,k_len,key);
         ret = Find(tmp);
 
         if (ret.is_null()) return -1;
         binary_tree_node ret_node;
         ret_node.self = ret;
         ret_node.load();
-        memcpy(value,ret_node.data.value,32);
+        memcpy(value,ret_node.data.value,v_len);
         return 0;
     }
     int get_by_key(unsigned char key[],unsigned *value){
         memory_location ret;
-        data_type tmp;
-        put_char_to_block(tmp.key,0,0,32,key);
+        data_type2 tmp;
+        put_char_to_block(tmp.key,0,0,k_len,key);
         ret = Find(tmp);
 
         if (ret.is_null()) return -1;
@@ -121,7 +119,7 @@ struct db_map : public TREAP{
     }
     int get_by_key(unsigned key,unsigned char value[]){
         memory_location ret;
-        data_type tmp;
+        data_type2 tmp;
         put_int_to_block(tmp.key,0,key);
         ret = Find(tmp);
 
@@ -129,12 +127,12 @@ struct db_map : public TREAP{
         binary_tree_node ret_node;
         ret_node.self = ret;
         ret_node.load();
-        memcpy(value,ret_node.data.value,32);
+        memcpy(value,ret_node.data.value,v_len);
         return 0;
     }
     int get_by_key(unsigned key,unsigned *value){
         memory_location ret;
-        data_type tmp;
+        data_type2 tmp;
         put_int_to_block(tmp.key,0,key);
         ret = Find(tmp);
 
@@ -148,23 +146,23 @@ struct db_map : public TREAP{
 
     int update(unsigned char key[],unsigned char value[]){
         memory_location ret;
-        data_type tmp;
-        put_char_to_block(tmp.key,0,0,32,key);
+        data_type2 tmp;
+        put_char_to_block(tmp.key,0,0,k_len,key);
         ret = Find(tmp);
 
         if (ret.is_null()) return -1;
         binary_tree_node ret_node;
         ret_node.self = ret;
         ret_node.load();
-        memcpy(ret_node.data.value,value,32);
+        memcpy(ret_node.data.value,value,v_len);
         ret_node.save();
         save();
         return 0;
     }
     int update(unsigned char key[],unsigned value){
         memory_location ret;
-        data_type tmp;
-        put_char_to_block(tmp.key,0,0,32,key);
+        data_type2 tmp;
+        put_char_to_block(tmp.key,0,0,k_len,key);
         ret = Find(tmp);
 
         if (ret.is_null()) return -1;
@@ -178,7 +176,7 @@ struct db_map : public TREAP{
     }
     int update(unsigned key,unsigned char value[]){
         memory_location ret;
-        data_type tmp;
+        data_type2 tmp;
         put_int_to_block(tmp.key,0,key);
         ret = Find(tmp);
 
@@ -186,14 +184,14 @@ struct db_map : public TREAP{
         binary_tree_node ret_node;
         ret_node.self = ret;
         ret_node.load();
-        memcpy(ret_node.data.value,value,32);
+        memcpy(ret_node.data.value,value,v_len);
         ret_node.save();
         save();
         return 0;
     }
     int update(unsigned key,unsigned value){
         memory_location ret;
-        data_type tmp;
+        data_type2 tmp;
         put_int_to_block(tmp.key,0,key);
         ret = Find(tmp);
 
@@ -217,20 +215,20 @@ struct db_map : public TREAP{
         num+=get_key(node.right,x,num);
         return node.size;
     }
-    unsigned get_key(memory_location root,unsigned char x[][32],unsigned num){
+    unsigned get_key(memory_location root,unsigned char x[][k_len],unsigned num){
         if (root.is_null()) return 0;
         binary_tree_node node;
         node.self = root;
         node.load();
         num+=get_key(node.left,x,num);
-        memcpy(x[num++],node.data.key,32);
+        memcpy(x[num++],node.data.key,k_len);
         num+=get_key(node.right,x,num);
         return node.size;
     }
     unsigned get_all_key(unsigned x[]){
         return get_key(root,x,0);
     }
-    unsigned get_all_key(unsigned char x[][32]){
+    unsigned get_all_key(unsigned char x[][k_len]){
         return get_key(root,x,0);
     }
 };

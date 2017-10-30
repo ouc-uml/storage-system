@@ -7,6 +7,10 @@ void uout(unsigned char block[],int num){
     for (int i = 0;i<num;i++)
         putchar(block[i]);
 }
+void uout(FILE *fp,unsigned char block[],int num){
+    for (int i = 0;i<num;i++)
+        fprintf(fp,"%c",block[i]);
+}
 void uprint(unsigned char ret[],unsigned maxlen, const char control[], ...){
     memset(ret,0,maxlen);
     va_list ap;

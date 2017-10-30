@@ -260,21 +260,21 @@ struct db_list{
         memcpy(value,node.data.key,q_len);
         return 0;
     }
-    void show(){
+    void show(FILE* fp){
         memory_location index = head;
         while (!index.is_null()){
             queue_node node;
             node.self = index;
             node.load();
-            if (k_type) printf("%s\n",node.data.key);
+            if (k_type) fprintf(fp,"%s\n",node.data.key);
             else {
                 unsigned tmp = trans_block_to_int(node.data.key,0,4);
-                printf("%u\n",tmp);
+                fprintf(fp,"%u\n",tmp);
             }
             index = node.succ;
         }
     }
-    void show(int start,int end){
+    void show(FILE *fp,int start,int end){
         int nn = 0;
         memory_location index = head;
         while (!index.is_null()){
@@ -282,11 +282,11 @@ struct db_list{
             node.self = index;
             node.load();
             if (nn>=start && nn<=end){
-                printf("[%d]\t:\t", nn);
-            if (k_type) printf("\"%s\"\n",node.data.key);
+                fprintf(fp,"[%d]\t:\t", nn);
+            if (k_type) fprintf(fp,"\"%s\"\n",node.data.key);
             else {
                 unsigned tmp = trans_block_to_int(node.data.key,0,4);
-                printf("%u\n",tmp);
+                fprintf(fp,"%u\n",tmp);
             }
             }
             index = node.succ;

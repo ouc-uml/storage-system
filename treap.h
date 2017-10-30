@@ -279,7 +279,7 @@ struct TREAP{
 		}
 	}
 
-	int show(memory_location x,int index){
+	int show(FILE *fp,memory_location x,int index){
         if (x.is_null()) return index;
         binary_tree_node node_x,left_node,right_node;
         node_x.self = x;
@@ -292,27 +292,27 @@ struct TREAP{
         if (right_node.self.is_null()) right_node.data.key[0] = 0;
         else  right_node.load();
 
-        if (!node_x.left.is_null()) index+=show(node_x.left,index);
+        if (!node_x.left.is_null()) index+=show(fp,node_x.left,index);
         if (k_type) {
-            printf("[%d]\t\"",index++);
-            uout(node_x.data.key,k_len);
-            printf("\"\t:\t");
+            fprintf(fp,"[%d]\t\"",index++);
+            uout(fp,node_x.data.key,k_len);
+            fprintf(fp,"\"\t:\t");
         }
         else {
             unsigned tmp = trans_block_to_int(node_x.data.key,0,4);
-            printf("[%d]\t%d\t:\t",index++,tmp);
+            fprintf(fp,"[%d]\t%d\t:\t",index++,tmp);
         }
         if (v_type) {
-            printf("\"");
-            uout(node_x.data.value,v_len);
-            printf("\"");
-            printf("\n");
+            fprintf(fp,"\"");
+            uout(fp,node_x.data.value,v_len);
+            fprintf(fp,"\"");
+            fprintf(fp,"\n");
         }
         else {
             unsigned tmp = trans_block_to_int(node_x.data.value,0,4);
-            printf("%d\n",tmp);
+            fprintf(fp,"%d\n",tmp);
         }
-        if (!node_x.right.is_null()) index+=show(node_x.right,index);
+        if (!node_x.right.is_null()) index+=show(fp,node_x.right,index);
 
         return index;
 	}

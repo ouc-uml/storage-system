@@ -39,7 +39,8 @@ void send_file(const char filename[],int connectfd,int iret){
 	for (int i = 0;i<sz;i+=MAXDATASIZE-4){
 		unsigned nn = read(fd,buf+4,MAXDATASIZE-4);
 
-		put_int_to_block(buf,0,nn);
+		if (i+MAXDATASIZE-4<sz) put_int_to_block(buf,0,nn+MAXDATASIZE);
+		else put_int_to_block(buf,0,nn);
 
 		if (nn == 0) break;
 

@@ -60,18 +60,17 @@ int main()
     while (1){
         //start to receive message 
         //not blocking mode
-        int flags = fcntl(fd, F_GETFL, 0);   
-        fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+        //int flags = fcntl(fd, F_GETFL, 0);   
+        //fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 
         while (1){
-        usleep(80000);
         num = recv(fd, recebuf, MAXDATASIZE,0);
-        if (num <= 0) break;
+        if (num <= 0) exit(1);
 
-        printf("%s",recebuf);
         unsigned nn = trans_block_to_int(recebuf,0,4);
         for (int i = 0;i<nn;i++)
             putchar(recebuf[4+i]);
+        if (nn<MAXDATASIZE) break;
         }
 
         //start to send message

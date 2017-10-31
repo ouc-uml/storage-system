@@ -68,8 +68,10 @@ int main()
         if (num <= 0) exit(1);
 
         unsigned nn = trans_block_to_int(recebuf,0,4);
-        for (int i = 0;i<nn;i++)
+        unsigned nnn = nn>=MAXDATASIZE?(nn-MAXDATASIZE):nn;
+        for (int i = 0;i<nnn;i++){
             putchar(recebuf[4+i]);
+        }
         if (nn<MAXDATASIZE) break;
         }
 

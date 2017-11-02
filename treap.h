@@ -292,7 +292,7 @@ struct TREAP{
         if (right_node.self.is_null()) right_node.data.key[0] = 0;
         else  right_node.load();
 
-        if (!node_x.left.is_null()) index+=show(fp,node_x.left,index);
+        if (!node_x.left.is_null()) index=show(fp,node_x.left,index);
         if (k_type) {
             fprintf(fp,"[%d]\t\"",index++);
             uout(fp,node_x.data.key,k_len);
@@ -312,7 +312,7 @@ struct TREAP{
             unsigned tmp = trans_block_to_int(node_x.data.value,0,4);
             fprintf(fp,"%d\n",tmp);
         }
-        if (!node_x.right.is_null()) index+=show(fp,node_x.right,index);
+        if (!node_x.right.is_null()) index=show(fp,node_x.right,index);
 
         return index;
 	}

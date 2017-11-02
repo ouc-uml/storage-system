@@ -395,12 +395,12 @@ network connection end
 					fprintf(fp,"%u\n", value);
 				}
 				else if (!tmp.k_type && tmp.v_type){
-					unsigned key = atoi(args[3].c_str());
+					unsigned key = atoi(args[2].c_str());
 					tmp.get_by_key(key,value);
 					fprintf(fp,"%s\n", value);
 				}
 				else if (!tmp.k_type && !tmp.v_type){
-					unsigned key = atoi(args[3].c_str());
+					unsigned key = atoi(args[2].c_str());
 					unsigned value;
 					tmp.get_by_key(key,&value);
 					fprintf(fp,"%u\n", value);

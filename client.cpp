@@ -10,7 +10,7 @@
 #include <fcntl.h>
 #include <arpa/inet.h>
 
-#define SERVER_IP "47.93.218.237"
+#define SERVER_IP "104.236.163.68"
 #define PORT 12345
 #define MAXDATASIZE 512
 

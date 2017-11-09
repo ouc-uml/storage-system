@@ -43,6 +43,37 @@ struct db_struct{
 	    fcntl(fd,F_SETLKW,&lock);
 	    close(fd);
 	}
+	void load(){
+		int fd = open("db_root.dat",O_RDWR ,S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |S_IROTH);
+	    if (fd <0) {
+	        printf("read_node_block error, file not exists\n");
+	        return ;
+	    }
+
+	    unsigned char result[node_block_size];
+	    int linenum = 0;
+
+	    struct flock lock;
+	    lock.l_type = F_RDLCK;
+	    lock.l_whence = SEEK_SET;
+	    int line_num = 0;
+	    lock.l_start = line_num*node_block_size;
+	    lock.l_len = node_block_size;
+
+	    fcntl(fd,F_SETLKW,&lock);
+
+	    read(fd,result,node_block_size);
+	    map1.self.filenum = trans_block_to_int(result,0,4);
+	    map1.self.linenum = trans_block_to_int(result,4,4);
+	    map2.self.filenum = trans_block_to_int(result,8,4);
+	    map2.self.linenum = trans_block_to_int(result,12,4);
+
+	    lock.l_type = F_UNLCK;
+	    fcntl(fd,F_SETLKW,&lock);
+	    close(fd);
+	    map1.load();
+	    map2.load();
+	}
 
 	db_struct(int any_num){
 	    int fd = open("db_root.dat",O_RDWR ,S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP |S_IROTH);
@@ -90,16 +121,19 @@ struct db_struct{
 	}
 
 	bool exists_map(const char _name[]){
+		load();
         unsigned char name[k_len];
         uprint(name,k_len,"s",_name);
         return map1.exists(name);
 	}
 	bool exists_list(const char _name[]){
+		load();
         unsigned char name[k_len];
         uprint(name,k_len,"s",_name);
         return map2.exists(name);
 	}
 	db_map get_map(const char name[]){
+		load();
 		unsigned char key[k_len],value[v_len];
 		uprint(key,k_len,"s",name);
 		int ifexists = map1.get_by_key(key,value);
@@ -114,6 +148,7 @@ struct db_struct{
 		return ret;
 	}
 	db_map create_map(const char name[],char k_ty,char v_ty){
+		load();
 		if (exists_map(name)) return get_map(name);
 		db_map ret(name,k_ty,v_ty);
 		ret.create();
@@ -128,6 +163,7 @@ struct db_struct{
 		return ret;
 	}
 	void delete_map(const char name[]){
+		load();
 		unsigned char key[k_len];
 		uprint(key,k_len,"s",name);
 		db_map tmp = get_map(name);
@@ -136,6 +172,7 @@ struct db_struct{
 		save();
 	}
 	void show_all_map(){
+		load();
 		int map_num = map1.get_size();
 		unsigned char ret[map_num+1][k_len];
 		map1.get_all_key(ret);
@@ -144,6 +181,7 @@ struct db_struct{
 	}
 
 	db_list get_list(const char name[]){
+		load();
 		unsigned char key[k_len],value[v_len];
 		uprint(key,k_len,"s",name);
 		int ifexists = map2.get_by_key(key,value);
@@ -158,6 +196,7 @@ struct db_struct{
 		return ret;
 	}
 	db_list create_list(const char name[],char k_ty){
+		load();
 		if (exists_list(name)) return get_list(name);
 		db_list ret(name,k_ty);
 		ret.create();
@@ -172,6 +211,7 @@ struct db_struct{
 		return ret;
 	}
 	void delete_list(const char name[]){
+		load();
 		unsigned char key[k_len];
 		uprint(key,k_len,"s",name);
 		db_list tmp = get_list(name);
@@ -180,6 +220,7 @@ struct db_struct{
 		save();
 	}
 	void show_all_list(){
+		load();
 		int map_num = map2.get_size();
 		unsigned char ret[map_num+1][k_len];
 		map2.get_all_key(ret);

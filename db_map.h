@@ -27,6 +27,7 @@ struct db_map : public TREAP{
     }
 
     bool exists(unsigned char key[]){
+        load();
         memory_location ret;
         data_type2 tmp;
         put_char_to_block(tmp.key,0,0,k_len,key);
@@ -35,6 +36,7 @@ struct db_map : public TREAP{
         return !ret.is_null();
     }
     bool exists(unsigned key){
+        load();
         memory_location ret;
         data_type2 tmp;
         put_int_to_block(tmp.key,0,key);
@@ -44,6 +46,7 @@ struct db_map : public TREAP{
     }
 
     void add(unsigned char _key[],unsigned char _value[]){
+        load();
         if (exists(_key)) return ;
         data_type2 tmp;
         memcpy(tmp.key,_key,k_len);
@@ -52,6 +55,7 @@ struct db_map : public TREAP{
         save();
     }
     void add(unsigned _key,unsigned char _value[]){
+        load();
         if (exists(_key)) return ;
         data_type2 tmp;
         put_int_to_block(tmp.key,0,_key);
@@ -60,6 +64,7 @@ struct db_map : public TREAP{
         save();
     }
     void add(unsigned char _key[],unsigned _value){
+        load();
         if (exists(_key)) return ;
         data_type2 tmp;
         put_char_to_block(tmp.key,0,0,k_len,_key);
@@ -68,6 +73,7 @@ struct db_map : public TREAP{
         save();
     }
     void add(unsigned _key,unsigned _value){
+        load();
         if (exists(_key)) return ;
         data_type2 tmp;
         put_int_to_block(tmp.key,0,_key);
@@ -77,6 +83,7 @@ struct db_map : public TREAP{
     }
 
     void drop(unsigned char _key[]){
+        load();
         if (!exists(_key)) return ;
         data_type2 tmp;
         put_char_to_block(tmp.key,0,0,k_len,_key);
@@ -84,6 +91,7 @@ struct db_map : public TREAP{
         save();
     }
     void drop(unsigned _key){
+        load();
         if (!exists(_key)) return ;
         data_type2 tmp;
         put_int_to_block(tmp.key,0,_key);
@@ -92,6 +100,7 @@ struct db_map : public TREAP{
     }
 
     int get_by_key(unsigned char key[],unsigned char value[]){
+        load();
         memory_location ret;
         data_type2 tmp;
         put_char_to_block(tmp.key,0,0,k_len,key);
@@ -105,6 +114,7 @@ struct db_map : public TREAP{
         return 0;
     }
     int get_by_key(unsigned char key[],unsigned *value){
+        load();
         memory_location ret;
         data_type2 tmp;
         put_char_to_block(tmp.key,0,0,k_len,key);
@@ -118,6 +128,7 @@ struct db_map : public TREAP{
         return 0;
     }
     int get_by_key(unsigned key,unsigned char value[]){
+        load();
         memory_location ret;
         data_type2 tmp;
         put_int_to_block(tmp.key,0,key);
@@ -131,6 +142,7 @@ struct db_map : public TREAP{
         return 0;
     }
     int get_by_key(unsigned key,unsigned *value){
+        load();
         memory_location ret;
         data_type2 tmp;
         put_int_to_block(tmp.key,0,key);
@@ -145,6 +157,7 @@ struct db_map : public TREAP{
     }
 
     int update(unsigned char key[],unsigned char value[]){
+        load();
         memory_location ret;
         data_type2 tmp;
         put_char_to_block(tmp.key,0,0,k_len,key);
@@ -160,6 +173,7 @@ struct db_map : public TREAP{
         return 0;
     }
     int update(unsigned char key[],unsigned value){
+        load();
         memory_location ret;
         data_type2 tmp;
         put_char_to_block(tmp.key,0,0,k_len,key);
@@ -175,6 +189,7 @@ struct db_map : public TREAP{
         return 0;
     }
     int update(unsigned key,unsigned char value[]){
+        load();
         memory_location ret;
         data_type2 tmp;
         put_int_to_block(tmp.key,0,key);
@@ -190,6 +205,7 @@ struct db_map : public TREAP{
         return 0;
     }
     int update(unsigned key,unsigned value){
+        load();
         memory_location ret;
         data_type2 tmp;
         put_int_to_block(tmp.key,0,key);
@@ -206,6 +222,7 @@ struct db_map : public TREAP{
     }
 
     unsigned get_key(memory_location root,unsigned x[],unsigned num){
+        load();
         if (root.is_null()) return 0;
         binary_tree_node node;
         node.self = root;
@@ -216,6 +233,7 @@ struct db_map : public TREAP{
         return node.size;
     }
     unsigned get_key(memory_location root,unsigned char x[][k_len],unsigned num){
+        load();
         if (root.is_null()) return 0;
         binary_tree_node node;
         node.self = root;

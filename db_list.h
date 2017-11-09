@@ -45,6 +45,7 @@ struct db_list{
         k_type = trans_block_to_int(buffer,20+k_len,4) == 128;
     }
     void push_tail(unsigned char x[]){
+        load();
         size++;
         queue_node node_x;
         node_x.create();
@@ -66,6 +67,7 @@ struct db_list{
         save();
     }
     void push_tail(unsigned x){
+        load();
         size++;
         queue_node node_x;
         node_x.create();
@@ -87,6 +89,7 @@ struct db_list{
         save();
     }
     void push_head(unsigned char x[]){
+        load();
         size++;
         queue_node node_x;
         node_x.create();
@@ -108,6 +111,7 @@ struct db_list{
         save();
     }
     void push_head(unsigned x){
+        load();
         size++;
         queue_node node_x;
         node_x.create();
@@ -129,6 +133,7 @@ struct db_list{
         save();
     }
     void pop_tail(){
+        load();
         if (size == 0) return ;
         size--;
         queue_node node_tail;
@@ -147,6 +152,7 @@ struct db_list{
         save();
     }
     void pop_head(){
+        load();
         if (size == 0) return ;
         size--;
         queue_node node_head;
@@ -165,6 +171,7 @@ struct db_list{
         save();
     }
     unsigned get_all_value(unsigned char x[][q_len]){
+        load();
         memory_location index = head;
         unsigned num = 0;
         while (!index.is_null()){
@@ -177,6 +184,7 @@ struct db_list{
         return num;
     }
     unsigned get_all_value(unsigned x[]){
+        load();
         memory_location index = head;
         unsigned num = 0;
         while (!index.is_null()){
@@ -189,6 +197,7 @@ struct db_list{
         return num;
     }
     int update(unsigned index,unsigned x){
+        load();
         if (index>=size) return -1;
 
         memory_location tmp = head;
@@ -208,6 +217,7 @@ struct db_list{
         return 0;
     }
     int update(unsigned index,unsigned char x[]){
+        load();
         if (index>=size) return -1;
 
         memory_location tmp = head;
@@ -227,6 +237,7 @@ struct db_list{
         return 0;
     }
     int get_by_index(int index,unsigned *value){        
+        load();
         if (index>=size) return -1;
 
         memory_location tmp = head;
@@ -244,6 +255,7 @@ struct db_list{
         return 0;
     }
     int get_by_index(int index,unsigned char value[]){        
+        load();
         if (index>=size) return -1;
 
         memory_location tmp = head;
@@ -310,10 +322,14 @@ struct db_list{
         size = 0;
     }
     void release(){
+        load();
+        if (self.is_null()) return;
         release_node();
         delete_node(self.filenum,self.linenum);
     }
     void clear(){
+        load();
+        if (self.is_null()) return;
         release_node();
     }
 };
